@@ -1,104 +1,62 @@
 // src/index.scss
+// Reset global + base typographique
+// CE FICHIER EST CRITIQUE — sans lui rien ne s'affiche correctement
 
-// ================================
-// VARIABLES GLOBALES
-// ================================
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;600;700;900&display=swap');
 
-:root {
-  // Primary - Bleu océan
-  --primary-100: #e0f2fe;
-  --primary-200: #7dd3fc;
-  --primary-500: #0ea5e9;
-  --primary-700: #0369a1;
-  --primary-900: #0c4a6e;
-
-  // Secondary - Vert mangrove
-  --secondary-100: #dcfce7;
-  --secondary-200: #86efac;
-  --secondary-500: #22c55e;
-  --secondary-700: #15803d;
-  --secondary-900: #14532d;
-
-  // Tertiary - Corail
-  --tertiary-100: #ffe4e6;
-  --tertiary-200: #fda4af;
-  --tertiary-500: #f43f5e;
-  --tertiary-700: #be123c;
-  --tertiary-900: #881337;
-
-  // Success
-  --success: #16a34a;
-  --success-light: #dcfce7;
-
-  // Warning
-  --warning: #d97706;
-  --warning-light: #fef3c7;
-
-  // Danger
-  --danger: #dc2626;
-  --danger-light: #fee2e2;
-
-  // Neutrals
-  --white: #ffffff;
-  --gray-100: #f1f5f9;
-  --gray-300: #cbd5e1;
-  --gray-500: #64748b;
-  --gray-700: #334155;
-  --gray-900: #0f172a;
-  --black: #000000;
-
-  // Typography
-  --font-primary: 'Inter', sans-serif;
-  --font-display: 'Space Grotesk', sans-serif;
-
-  // Spacing
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 16px;
-  --spacing-lg: 24px;
-  --spacing-xl: 48px;
-  --spacing-2xl: 96px;
-
-  // Border radius
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 16px;
-  --radius-full: 9999px;
-
-  // Shadows
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.15);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,0.20);
-}
-
-// ================================
-// RESET & BASE
-// ================================
-
+// ── Reset total ──────────────────────────────────────────
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
+// ── Base HTML/Body ───────────────────────────────────────
 html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
 }
 
 body {
-  font-family: var(--font-primary);
-  background-color: var(--gray-900);
-  color: var(--white);
-  line-height: 1.6;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #ffffff;
+  background: #040d1e;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+// ── Éléments de base ─────────────────────────────────────
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  line-height: 1.2;
+  color: #ffffff;
+}
+
+p { color: rgba(255,255,255,0.70); }
 
 a {
+  color: #00e5ff;
   text-decoration: none;
-  color: inherit;
+  &:hover { text-decoration: underline; }
 }
 
-img {
-  max-width: 100%;
-  display: block;
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+img, video { max-width: 100%; display: block; }
+
+// ── Root app ─────────────────────────────────────────────
+#root {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }

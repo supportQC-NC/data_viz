@@ -1,363 +1,346 @@
-// ============================================================
-// SeaLevelControl.scss
-// Tous les styles du panneau de contrôle — AUCUN css dans le JSX
-// ============================================================
-
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
 
-$font:  'Space Mono', 'Courier New', monospace;
-$bg:    rgba(4, 9, 22, 0.97);
-$cyan:  #00e5ff;
-$blur:  blur(32px) saturate(2);
-
-// ── Animations ────────────────────────────────────────────
-@keyframes slcBreath {
-  0%, 100% { box-shadow: 0 0 12px var(--slc-color, #{$cyan}); }
-  50%      { box-shadow: 0 0 28px var(--slc-color, #{$cyan}); }
-}
-
-// ── Conteneur racine ──────────────────────────────────────
+// ── Racine ─────────────────────────────────────────────
 .slc {
-  position:       fixed;
-  bottom:         24px;
-  left:           24px;
-  width:          330px;
-  z-index:        9999;
-  font-family:    $font;
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  width: 600px;
+  z-index: 9999;
+  font-family: 'Space Mono', 'Courier New', monospace;
   pointer-events: auto;
-  color:          #fff;
+  color: #c7bebe;
 }
 
-// ── Panneau ───────────────────────────────────────────────
+// ── Panneau ────────────────────────────────────────────
 .slc__panel {
-  background:      $bg;
-  backdrop-filter: $blur;
-  border:          1px solid rgba(255, 255, 255, 0.12);
-  border-radius:   18px;
-  overflow:        hidden;
+  background: #0d1f3c;
+  border: 2px solid rgba(255,255,255,0.20);
+  border-radius: 20px;
+  overflow: hidden;
   box-shadow:
-    0 24px 64px rgba(0,0,0,0.85),
-    0 0 0 1px rgba($cyan, 0.06),
-    inset 0 1px 0 rgba(255,255,255,0.08);
+    0 24px 64px rgba(0,0,0,0.90),
+    0 0 40px rgba(0,229,255,0.08);
 }
 
-// ── Header ────────────────────────────────────────────────
+// ── Header ─────────────────────────────────────────────
 .slc__head {
-  display:       flex;
-  align-items:   center;
-  gap:           14px;
-  padding:       20px 22px 18px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 22px 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  background: rgba(0,0,0,0.25);
+  
 }
 
 .slc__icon {
-  width:         44px;
-  height:        44px;
+  width: 46px;
+  height: 46px;
   border-radius: 12px;
-  display:       flex;
-  align-items:   center;
-  justify-content:center;
-  font-size:     22px;
-  flex-shrink:   0;
-  animation:     slcBreath 3s ease-in-out infinite;
-  transition:    background .5s, border-color .5s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
 }
 
-.slc__titles { flex: 1; min-width: 0; }
+.slc__titles { flex: 1; min-width: 0;  }
 
 .slc__eyebrow {
-  font-size:      10px;           // LISIBLE
+  font-size: 11px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color:          rgba(255, 255, 255, 0.32);
-  margin-bottom:  5px;
-  display:        block;
+  color: rgba(255,255,255,0.50);
+  margin-bottom: 5px;
+  display: block;
+  font-weight: 700;
 }
 
 .slc__name {
-  font-size:      16px;           // LISIBLE
-  font-weight:    700;
-  line-height:    1.2;
-  white-space:    nowrap;
-  overflow:       hidden;
-  text-overflow:  ellipsis;
-  transition:     color .5s, text-shadow .5s;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #ffffff;
 }
 
 .slc__badge {
-  text-align:  right;
+  text-align: right;
   flex-shrink: 0;
   line-height: 1;
 }
 
 .slc__badge-num {
-  font-size:      28px;           // TRÈS LISIBLE
-  font-weight:    700;
+  font-size: 30px;
+  font-weight: 700;
   letter-spacing: -0.03em;
-  line-height:    1;
-  transition:     color .5s, text-shadow .5s;
+  line-height: 1;
+  color: #ffffff;
 }
 
 .slc__badge-unit {
-  font-size:  14px;
-  opacity:    0.55;
-  font-weight:400;
-  margin-left:2px;
+  font-size: 15px;
+  color: rgba(255,255,255,0.65);
+  font-weight: 400;
+  margin-left: 2px;
 }
 
 .slc__badge-year {
-  font-size:  12px;               // LISIBLE
-  opacity:    0.40;
+  font-size: 13px;
+  color: rgba(255,255,255,0.50);
   margin-top: 3px;
 }
 
-// ── Body ──────────────────────────────────────────────────
+// ── Body ───────────────────────────────────────────────
 .slc__body {
-  padding: 18px 22px 16px;
+  padding: 20px 22px 18px;
 }
 
-// ── Barre d'eau ───────────────────────────────────────────
+// ── Barre d'eau ────────────────────────────────────────
 .slc__wbar {
-  position:      relative;
-  height:        62px;
-  background:    rgba(0, 0, 0, 0.42);
-  border:        1px solid rgba(255, 255, 255, 0.07);
+  position: relative;
+  height: 64px;
+  background: rgba(0,0,0,0.50);
+  border: 1px solid rgba(255,255,255,0.15);
   border-radius: 12px;
-  overflow:      hidden;
-  margin-bottom: 18px;
+  overflow: hidden;
+  margin-bottom: 20px;
 
   &-fill {
-    position:   absolute;
-    bottom:     0;
-    left:       0;
-    right:      0;
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
     transition: height .6s cubic-bezier(.4,0,.2,1), background .6s;
     border-top: 2px solid currentColor;
   }
 
   &-label {
-    position:        absolute;
-    inset:           0;
-    display:         flex;
-    align-items:     center;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
     justify-content: center;
-    font-size:       12px;        // LISIBLE
-    color:           rgba(255, 255, 255, 0.38);
-    letter-spacing:  0.06em;
-    pointer-events:  none;
-    z-index:         2;
+    font-size: 13px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.70);
+    letter-spacing: 0.06em;
+    pointer-events: none;
+    z-index: 2;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
   }
 }
 
-// ── Slider ────────────────────────────────────────────────
-.slc__slider {
-  margin-bottom: 16px;
-}
+// ── Slider ─────────────────────────────────────────────
+.slc__slider { margin-bottom: 18px; }
 
 .slc__range {
-  -webkit-appearance: none;
-  width:         100%;
-  height:        6px;
-  border-radius: 3px;
-  outline:       none;
-  cursor:        pointer;
-  display:       block;
+  
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+  display: block;
+  border: 1px solid rgba(255,255,255,0.15);
 
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width:        26px;
-    height:       26px;
-    border-radius:50%;
-    background:   var(--slc-color, #{$cyan});
-    border:       3px solid rgba(255,255,255,0.42);
-    cursor:       grab;
-    box-shadow:
-      0 0 0 5px color-mix(in srgb, var(--slc-color, #{$cyan}) 20%, transparent),
-      0 0 18px var(--slc-color, #{$cyan});
-    transition:   transform .15s, box-shadow .2s;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--slc-color, #00e5ff);
+    border: 3px solid #ffffff;
+    cursor: grab;
+    box-shadow: 0 0 0 4px rgba(255,255,255,0.15), 0 0 20px var(--slc-color, #00e5ff);
+    transition: transform .15s, box-shadow .2s;
 
     &:active {
-      cursor:    grabbing;
+      cursor: grabbing;
       transform: scale(1.3);
     }
   }
 
   &::-moz-range-thumb {
-    width:        26px;
-    height:       26px;
-    border-radius:50%;
-    background:   var(--slc-color, #{$cyan});
-    border:       3px solid rgba(255,255,255,0.42);
-    box-shadow:   0 0 16px var(--slc-color, #{$cyan});
-    cursor:       grab;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--slc-color, #00e5ff);
+    border: 3px solid #ffffff;
+    box-shadow: 0 0 20px var(--slc-color, #00e5ff);
+    cursor: grab;
   }
 }
 
 .slc__ticks {
-  display:         flex;
+  display: flex;
   justify-content: space-between;
-  margin-top:      7px;
-  padding:         0 2px;
+  margin-top: 8px;
+  padding: 0 2px;
 }
 
 .slc__tick {
-  width:        2px;
-  height:       7px;
-  border-radius:1px;
-  cursor:       pointer;
-  transition:   all .3s;
-  flex-shrink:  0;
+  width: 3px;
+  height: 8px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all .3s;
+  flex-shrink: 0;
 }
 
-// ── Scénarios ─────────────────────────────────────────────
+// ── Scénarios ──────────────────────────────────────────
 .slc__scenes {
-  display:       flex;
-  gap:           5px;
-  flex-wrap:     wrap;
-  margin-bottom: 18px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
 }
 
 .slc__scene {
-  flex:           1;
-  min-width:      50px;
-  display:        flex;
+  flex: 1;
+  min-width: 52px;
+  display: flex;
   flex-direction: column;
-  align-items:    center;
-  gap:            5px;
-  padding:        10px 6px;
-  background:     rgba(255, 255, 255, 0.03);
-  border:         1px solid rgba(255, 255, 255, 0.09);
-  border-radius:  10px;
-  cursor:         pointer;
-  transition:     all .22s;
-  font-family:    inherit;
-  color:          #fff;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 6px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all .22s;
+  font-family: inherit;
+  color: #fff;
 
   &:hover {
-    background:   rgba(255, 255, 255, 0.07);
-    border-color: rgba(255, 255, 255, 0.22);
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.35);
   }
 
   &--active { transform: scale(1.06); }
 
   &__dot {
-    width:        11px;
-    height:       11px;
-    border-radius:50%;
-    flex-shrink:  0;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 1px solid rgba(255,255,255,0.3);
   }
 
   &__label {
-    font-size:  12px;             // LISIBLE
-    font-weight:700;
-    line-height:1;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    color: #ffffff;
   }
 
   &__sub {
-    font-size:  8px;
-    opacity:    0.40;
-    line-height:1;
+    font-size: 9px;
+    color: rgba(255,255,255,0.55);
+    line-height: 1;
   }
 }
 
-// ── Stats ─────────────────────────────────────────────────
+// ── Stats ──────────────────────────────────────────────
 .slc__stats {
-  background:    rgba(0, 0, 0, 0.32);
-  border:        1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(0,0,0,0.40);
+  border: 1px solid rgba(255,255,255,0.12);
   border-radius: 12px;
-  padding:       14px 16px;
-  margin-bottom: 16px;
+  padding: 16px 18px;
+  margin-bottom: 18px;
 
   &-title {
-    font-size:      10px;         // LISIBLE
+    font-size: 11px;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color:          rgba($cyan, 0.45);
-    margin-bottom:  12px;
-    font-weight:    700;
-    display:        block;
+    color: #00e5ff;
+    margin-bottom: 14px;
+    font-weight: 700;
+    display: block;
   }
 }
 
 .slc__stat {
-  display:         flex;
+  display: flex;
   justify-content: space-between;
-  align-items:     center;
-  padding:         7px 0;
-  border-bottom:   1px solid rgba(255, 255, 255, 0.055);
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
 
   &:last-child { border-bottom: none; padding-bottom: 0; }
 
   &-label {
-    font-size:      12px;         // LISIBLE
-    color:          rgba(255, 255, 255, 0.42);
+    font-size: 12px;
+    color: rgba(255,255,255,0.65);
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    font-weight: 700;
   }
 
   &-value {
-    font-size:   14px;            // LISIBLE
+    font-size: 15px;
     font-weight: 700;
-    transition:  color .4s;
+    color: #ffffff;
+    transition: color .4s;
   }
 }
 
-// ── Description ───────────────────────────────────────────
+// ── Description ────────────────────────────────────────
 .slc__desc {
-  font-family:   system-ui, sans-serif;
-  font-size:     12px;            // LISIBLE
-  color:         rgba(255, 255, 255, 0.40);
-  line-height:   1.7;
-  margin-bottom: 16px;
+  font-family: system-ui, sans-serif;
+  font-size: 13px;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.7;
+  margin-bottom: 18px;
 }
 
-// ── Boutons ───────────────────────────────────────────────
+// ── Boutons ────────────────────────────────────────────
 .slc__controls { display: flex; gap: 10px; }
 
 .slc__btn-play {
-  flex:            1;
-  padding:         12px 0;
-  border-radius:   10px;
-  cursor:          pointer;
-  font-family:     inherit;
-  font-size:       13px;          // LISIBLE
-  font-weight:     700;
-  letter-spacing:  0.05em;
-  transition:      all .2s;
-  display:         flex;
-  align-items:     center;
+  flex: 1;
+  padding: 13px 0;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  transition: all .2s;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  gap:             7px;
-  border:          1px solid;
-  pointer-events:  auto;
+  gap: 8px;
+  border: 2px solid;
+  pointer-events: auto;
 }
 
 .slc__btn-reset {
-  padding:       12px 18px;
-  background:    rgba(255, 255, 255, 0.05);
-  border:        1px solid rgba(255, 255, 255, 0.10);
+  padding: 13px 18px;
+  background: rgba(255,255,255,0.08);
+  border: 2px solid rgba(255,255,255,0.20);
   border-radius: 10px;
-  color:         rgba(255, 255, 255, 0.52);
-  cursor:        pointer;
-  font-size:     20px;
-  font-family:   inherit;
-  transition:    all .2s;
-  pointer-events:auto;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 20px;
+  font-family: inherit;
+  transition: all .2s;
+  pointer-events: auto;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.10);
-    color:      #fff;
+    background: rgba(255,255,255,0.15);
+    border-color: rgba(255,255,255,0.40);
   }
 }
 
-// ── Pied ──────────────────────────────────────────────────
+// ── Pied ───────────────────────────────────────────────
 .slc__foot-bar { height: 3px; transition: background .5s; }
 
 .slc__credit {
-  font-size:   9px;
-  color:       rgba(255, 255, 255, 0.14);
-  text-align:  center;
-  margin-top:  10px;
+  font-size: 10px;
+  color: rgba(255,255,255,0.35);
+  text-align: center;
+  margin-top: 12px;
   font-family: system-ui;
   line-height: 1.5;
 }
