@@ -48,7 +48,7 @@ const LandingPage = () => {
             >
               Explorer maintenant →
             </button>
-            <button className="btn btn--ghost btn--lg">
+            <button className="btn btn--ghost btn--lg" onClick={() => navigate('/about')}>
               En savoir plus
             </button>
           </div>
