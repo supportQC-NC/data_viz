@@ -1,0 +1,325 @@
+// ============================================================
+// MapPage.scss
+// Tous les styles de la page carte — AUCUN css dans le JSX
+// Police : Space Mono (importée ici)
+// ============================================================
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+
+// ── Variables ─────────────────────────────────────────────
+$font:    'Space Mono', 'Courier New', monospace;
+$bg:      rgba(4, 9, 22, 0.96);
+$border:  rgba(255, 255, 255, 0.10);
+$cyan:    #00e5ff;
+$blur:    blur(32px) saturate(1.8);
+
+// ── Animations ────────────────────────────────────────────
+@keyframes mkPulse {
+  0%   { transform: translate(-50%, -50%) scale(1);   opacity: 0.7; }
+  100% { transform: translate(-50%, -50%) scale(3.5); opacity: 0;   }
+}
+@keyframes mkBreath {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.12); }
+}
+
+// ── Mapbox overrides ──────────────────────────────────────
+.mapboxgl-popup-content {
+  background:    transparent !important;
+  padding:       0 !important;
+  box-shadow:    none !important;
+  border-radius: 0 !important;
+}
+.mapboxgl-popup-tip { display: none !important; }
+
+.mapboxgl-ctrl-group {
+  background:     $bg !important;
+  border:         1px solid rgba($cyan, 0.18) !important;
+  backdrop-filter:blur(20px) !important;
+  border-radius:  10px !important;
+  overflow:       hidden !important;
+
+  button {
+    color:  rgba(255, 255, 255, 0.72) !important;
+    width:  32px !important;
+    height: 32px !important;
+
+    &:hover { background: rgba($cyan, 0.10) !important; }
+  }
+}
+
+// ── Wrapper page ──────────────────────────────────────────
+.map-page {
+  position:       relative;
+  width:          100%;
+  height:         100vh;
+  overflow:       hidden;
+  background:     #010508;
+  // pointer-events none sur le wrapper → carte Mapbox reçoit tout
+  pointer-events: none;
+}
+
+// Le conteneur direct de <Map> récupère les events
+.map-page__map-wrap {
+  width:          100%;
+  height:         100%;
+  pointer-events: auto;
+}
+
+// ── TOOLBAR ───────────────────────────────────────────────
+.mp-toolbar {
+  position:        fixed;
+  top:             20px;
+  left:            50%;
+  transform:       translateX(-50%);
+  display:         flex;
+  align-items:     center;
+  gap:             2px;
+  background:      $bg;
+  backdrop-filter: $blur;
+  border:          1px solid rgba($cyan, 0.20);
+  border-radius:   14px;
+  padding:         5px;
+  z-index:         9999;
+  pointer-events:  auto;
+  box-shadow:      0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba($cyan, 0.05);
+  font-family:     $font;
+
+  &__btn {
+    padding:       9px 16px;
+    background:    transparent;
+    border:        1px solid transparent;
+    border-radius: 10px;
+    color:         rgba(255, 255, 255, 0.50);
+    cursor:        pointer;
+    font-size:     13px;           // LISIBLE
+    font-family:   inherit;
+    font-weight:   400;
+    transition:    all .18s;
+    white-space:   nowrap;
+    pointer-events:auto;
+    letter-spacing:0.02em;
+
+    &:hover {
+      color:      #fff;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    &--active {
+      color:       $cyan;
+      background:  rgba($cyan, 0.12);
+      border-color:rgba($cyan, 0.35);
+      font-weight: 700;
+      box-shadow:  0 0 14px rgba($cyan, 0.18);
+    }
+  }
+
+  &__sep {
+    width:      1px;
+    height:     24px;
+    background: rgba(255, 255, 255, 0.08);
+    margin:     0 3px;
+    flex-shrink:0;
+  }
+}
+
+// ── HUD NIVEAU EAU ────────────────────────────────────────
+.mp-hud {
+  position:        fixed;
+  top:             70px;
+  left:            50%;
+  transform:       translateX(-50%);
+  display:         flex;
+  align-items:     center;
+  gap:             12px;
+  background:      rgba(4, 9, 22, 0.90);
+  backdrop-filter: blur(24px);
+  border:          1px solid rgba(255, 255, 255, 0.08);
+  border-radius:   100px;
+  padding:         6px 22px;
+  z-index:         9999;
+  pointer-events:  none;
+  font-family:     $font;
+  white-space:     nowrap;
+  box-shadow:      0 4px 20px rgba(0,0,0,0.45);
+
+  &__dot {
+    width:       8px;
+    height:      8px;
+    border-radius:50%;
+    flex-shrink: 0;
+    transition:  all .5s;
+  }
+
+  &__label {
+    font-size:      12px;         // LISIBLE
+    color:          rgba(255, 255, 255, 0.45);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  &__value {
+    font-size:   16px;            // LISIBLE
+    font-weight: 700;
+    transition:  color .4s, text-shadow .4s;
+  }
+}
+
+// ── LÉGENDE ───────────────────────────────────────────────
+.mp-legend {
+  position:        fixed;
+  top:             20px;
+  right:           20px;
+  background:      $bg;
+  backdrop-filter: $blur;
+  border:          1px solid rgba($cyan, 0.15);
+  border-radius:   14px;
+  padding:         16px 20px;
+  z-index:         9999;
+  pointer-events:  none;
+  font-family:     $font;
+  box-shadow:      0 8px 32px rgba(0,0,0,0.5);
+  min-width:       160px;
+
+  &__title {
+    font-size:      10px;         // LISIBLE
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color:          rgba($cyan, 0.50);
+    margin-bottom:  14px;
+    font-weight:    700;
+    display:        block;
+  }
+
+  &__row {
+    display:       flex;
+    align-items:   center;
+    gap:           10px;
+    font-size:     13px;          // LISIBLE
+    color:         rgba(255, 255, 255, 0.78);
+    margin-bottom: 9px;
+    line-height:   1;
+
+    &:last-child { margin-bottom: 0; }
+  }
+
+  &__dot {
+    width:        11px;
+    height:       11px;
+    border-radius:50%;
+    flex-shrink:  0;
+  }
+}
+
+// ── BADGE ─────────────────────────────────────────────────
+.mp-badge {
+  position:       fixed;
+  bottom:         20px;
+  right:          20px;
+  font-size:      9px;
+  color:          rgba(255, 255, 255, 0.15);
+  font-family:    $font;
+  text-align:     right;
+  z-index:        9999;
+  line-height:    1.9;
+  pointer-events: none;
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+}
+
+// ── MARQUEURS ─────────────────────────────────────────────
+.mp-marker {
+  position:       relative;
+  cursor:         pointer;
+  pointer-events: auto;
+  display:        flex;
+  align-items:    center;
+  justify-content:center;
+
+  &__ring {
+    position:      absolute;
+    top:           50%;
+    left:          50%;
+    border-radius: 50%;
+    animation:     mkPulse 2.5s ease-out infinite;
+    pointer-events:none;
+  }
+
+  &__shape {
+    position:  relative;
+    z-index:   2;
+    animation: mkBreath 3.5s ease-in-out infinite;
+  }
+}
+
+// ── POPUP ─────────────────────────────────────────────────
+.mp-popup {
+  background:      rgba(3, 8, 20, 0.98);
+  backdrop-filter: blur(28px);
+  border-radius:   14px;
+  padding:         18px 20px;
+  min-width:       250px;
+  max-width:       300px;
+  font-family:     $font;
+  color:           #fff;
+  pointer-events:  auto;
+
+  &__head {
+    display:       flex;
+    align-items:   flex-start;
+    gap:           12px;
+    margin-bottom: 14px;
+  }
+
+  &__flag { font-size: 26px; line-height: 1; flex-shrink: 0; }
+
+  &__info { flex: 1; min-width: 0; }
+
+  &__name {
+    font-size:     15px;          // LISIBLE
+    font-weight:   700;
+    margin-bottom: 3px;
+    line-height:   1.2;
+  }
+
+  &__sub {
+    font-size:  10px;
+    color:      rgba(255, 255, 255, 0.38);
+    line-height:1.4;
+  }
+
+  &__tag {
+    font-size:      10px;
+    font-weight:    700;
+    padding:        4px 10px;
+    border-radius:  12px;
+    white-space:    nowrap;
+    flex-shrink:    0;
+    align-self:     flex-start;
+    letter-spacing: 0.05em;
+  }
+
+  &__row {
+    display:         flex;
+    justify-content: space-between;
+    align-items:     center;
+    font-size:       12px;        // LISIBLE
+    padding:         6px 0;
+    border-bottom:   1px solid rgba(255, 255, 255, 0.06);
+
+    &:last-of-type { border-bottom: none; }
+  }
+
+  &__row-label { color: rgba(255, 255, 255, 0.42); }
+  &__row-value { font-weight: 700; text-align: right; }
+
+  &__desc {
+    margin-top:   12px;
+    font-size:    11px;           // LISIBLE
+    color:        rgba(255, 255, 255, 0.36);
+    line-height:  1.7;
+    font-family:  system-ui, sans-serif;
+    border-top:   1px solid rgba(255, 255, 255, 0.06);
+    padding-top:  10px;
+  }
+}
