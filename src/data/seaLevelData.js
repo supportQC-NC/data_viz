@@ -1,21 +1,9 @@
-// ============================================================
 // src/data/seaLevelData.js
-//
-// Architecture: Pacific Dataviz Challenge 2026
-// Données mockées — structure pensée pour swap open-data IPCC/NOAA/NASA
-//
-// Sources futures :
-//   → IPCC AR6 Sea Level Projections (ipcc.ch/report/ar6)
-//   → NOAA Sea Level Trends (tidesandcurrents.noaa.gov)
-//   → NASA Sea Level Change Portal (sealevel.nasa.gov)
-//   → SPREP Pacific Ocean Portal (ocean.sprep.org)
-//   → GeoNet Pacific (geonet.org.nz)
 // ============================================================
-
-// ─────────────────────────────────────────────
-// 1. SCÉNARIOS DE MONTÉE DES EAUX
-//    Source future : IPCC AR6 – SSP1-2.6 / SSP5-8.5
-// ─────────────────────────────────────────────
+// Architecture: Pacific Dataviz Challenge 2026
+// v2.0 — Ajout zones mangroves + données enrichies
+// Sources mockées — prêtes pour swap open-data IPCC/NOAA/JAXA
+// ============================================================
 
 export const SEA_LEVEL_SCENARIOS = [
   {
@@ -27,10 +15,10 @@ export const SEA_LEVEL_SCENARIOS = [
     description: 'Niveau de référence actuel (0 m). Données NOAA 2025.',
     ipccScenario: null,
     co2ppm: 424,
-    tempAnomaly: 1.2,       // °C vs préindustriel
-    arcticIceLoss: 0,       // % vs 1979
+    tempAnomaly: 1.2,
+    arcticIceLoss: 0,
     color: '#00E5FF',
-    waveIntensity: 0.15,    // Intensité des vagues (0–1) pour l'animation
+    waveIntensity: 0.15,
     particleCount: 80,
     skyGradient: ['#0a1628', '#0d2240'],
   },
@@ -133,17 +121,280 @@ export const SEA_LEVEL_SCENARIOS = [
 ];
 
 // ─────────────────────────────────────────────
-// 2. ZONES VULNÉRABLES — PACIFIQUE & MONDE
-//    Source future : SPREP, SPC, CoastalDEM v2
+// ZONES MANGROVES — PACIFIQUE
+// Source future : JAXA Global Mangrove Watch (GMW v3.0)
+// Données annuelles 1996–2020, résolution 25m
+// ─────────────────────────────────────────────
+
+export const MANGROVE_ZONES = {
+  type: 'FeatureCollection',
+  features: [
+    // ── NOUVELLE-CALÉDONIE ────────────────────────────
+    {
+      type: 'Feature',
+      properties: {
+        id: 'nc-west-coast',
+        name: 'Côte Ouest — Grande Terre',
+        country: 'Nouvelle-Calédonie',
+        flag: '🇳🇨',
+        region: 'Pacifique Sud-Ouest',
+        areaHa: 18500,             // Hectares total mangroves
+        healthIndex: 0.62,         // 0–1 (1 = pristine)
+        lossRate: 0.8,             // % perte annuelle
+        lossHa1990_2020: 3200,     // Ha perdus depuis 1990
+        protectionLevel: 'partial',// none / partial / protected
+        carbonTonnesHa: 850,       // tCO₂e / ha stocké
+        speciesCount: 4,           // Espèces de mangroves
+        dominantSpecies: 'Avicennia marina',
+        threatsMain: ['Nickel mining runoff', 'Agriculture', 'Urbanisation'],
+        submersionRise: 1.0,
+        gmwCoverage: true,
+        color: '#4CAF50',
+        coordinates: [165.8, -21.2],
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: [165.8, -21.2],
+      },
+    },
+    {
+      type: 'Feature',
+      properties: {
+        id: 'nc-noumea-lagoon',
+        name: 'Lagon de Nouméa',
+        country: 'Nouvelle-Calédonie',
+        flag: '🇳🇨',
+        region: 'Pacifique Sud-Ouest',
+        areaHa: 2800,
+        healthIndex: 0.45,
+        lossRate: 1.8,
+        lossHa1990_2020: 680,
+        protectionLevel: 'partial',
+        carbonTonnesHa: 780,
+        speciesCount: 3,
+        dominantSpecies: 'Rhizophora stylosa',
+        threatsMain: ['Urbanisation côtière', 'Pollution portuaire', 'Dragage'],
+        submersionRise: 0.8,
+        gmwCoverage: true,
+        color: '#FF9800',
+        coordinates: [166.32, -22.15],
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: [166.32, -22.15],
+      },
+    },
+
+    // ── FIDJI ─────────────────────────────────────────
+    {
+      type: 'Feature',
+      properties: {
+        id: 'fiji-viti-levu-north',
+        name: 'Viti Levu — Côte Nord',
+        country: 'Fidji',
+        flag: '🇫🇯',
+        region: 'Pacifique Sud',
+        areaHa: 42000,
+        healthIndex: 0.71,
+        lossRate: 0.5,
+        lossHa1990_2020: 4800,
+        protectionLevel: 'protected',
+        carbonTonnesHa: 920,
+        speciesCount: 6,
+        dominantSpecies: 'Bruguiera gymnorhiza',
+        threatsMain: ['Aquaculture crevettes', 'Déforestation agricole'],
+        submersionRise: 1.2,
+        gmwCoverage: true,
+        color: '#4CAF50',
+        coordinates: [177.8, -17.2],
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: [177.8, -17.2],
+      },
+    },
+    {
+      type: 'Feature',
+      properties: {
+        id: 'fiji-rewa-delta',
+        name: 'Delta de la Rewa',
+        country: 'Fidji',
+        flag: '🇫🇯',
+        region: 'Pacifique Sud',
+        areaHa: 8500,
+        healthIndex: 0.58,
+        lossRate: 1.2,
+        lossHa1990_2020: 1900,
+        protectionLevel: 'none',
+        carbonTonnesHa: 860,
+        speciesCount: 5,
+        dominantSpecies: 'Ceriops tagal',
+        threatsMain: ['Agriculture sucrière', 'Sédimentation', 'Cyclones répétés'],
+        submersionRise: 0.9,
+        gmwCoverage: true,
+        color: '#FF9800',
+        coordinates: [178.3, -18.0],
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: [178.3, -18.0],
+      },
+    },
+
+    // ── VANUATU ───────────────────────────────────────
+    {
+      type: 'Feature',
+      properties: {
+        id: 'vanuatu-espiritu-santo',
+        name: 'Espiritu Santo',
+        country: 'Vanuatu',
+        flag: '🇻🇺',
+        region: 'Pacifique Sud',
+        areaHa: 12000,
+        healthIndex: 0.80,
+        lossRate: 0.3,
+        lossHa1990_2020: 800,
+        protectionLevel: 'protected',
+        carbonTonnesHa: 1100,
+        speciesCount: 7,
+        dominantSpecies: 'Rhizophora apiculata',
+        threatsMain: ['Exploitation forestière', 'Cyclones catégorie 4-5'],
+        submersionRise: 1.5,
+        gmwCoverage: true,
+        color: '#2E7D32',
+        coordinates: [167.0, -15.4],
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: [167.0, -15.4],
+      },
+    },
+
+    // ── SALOMON ───────────────────────────────────────
+    {
+      type: 'Feature',
+      properties: {
+        id: 'solomon-new-georgia',
+        name: 'Nouvelle-Géorgie',
+        country: 'Îles Salomon',
+        flag: '🇸🇧',
+        region: 'Pacifique Sud-Ouest',
+        areaHa: 38000,
+        healthIndex: 0.83,
+        lossRate: 0.4,
+        lossHa1990_2020: 2800,
+        protectionLevel: 'partial',
+        carbonTonnesHa: 1050,
+        speciesCount: 9,
+        dominantSpecies: 'Sonneratia alba',
+        threatsMain: ['Exploitation forestière industrielle', 'Pêche'],
+        submersionRise: 2.0,
+        gmwCoverage: true,
+        color: '#2E7D32',
+        coordinates: [157.5, -8.5],
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: [157.5, -8.5],
+      },
+    },
+
+    // ── PAPOUASIE-NOUVELLE-GUINÉE ──────────────────────
+    {
+      type: 'Feature',
+      properties: {
+        id: 'png-fly-river',
+        name: 'Delta du fleuve Fly',
+        country: 'Papouasie-Nouvelle-Guinée',
+        flag: '🇵🇬',
+        region: 'Mélanésie',
+        areaHa: 520000,
+        healthIndex: 0.75,
+        lossRate: 0.6,
+        lossHa1990_2020: 48000,
+        protectionLevel: 'none',
+        carbonTonnesHa: 980,
+        speciesCount: 12,
+        dominantSpecies: 'Xylocarpus granatum',
+        threatsMain: ['Mines Ok Tedi (pollution)', 'Déforestation', 'Sédimentation'],
+        submersionRise: 3.0,
+        gmwCoverage: true,
+        color: '#FF5722',
+        coordinates: [141.2, -8.5],
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: [141.2, -8.5],
+      },
+    },
+
+    // ── INDONÉSIE ─────────────────────────────────────
+    {
+      type: 'Feature',
+      properties: {
+        id: 'indonesia-papua',
+        name: 'Papouasie occidentale',
+        country: 'Indonésie',
+        flag: '🇮🇩',
+        region: 'Asie-Pacifique',
+        areaHa: 2800000,
+        healthIndex: 0.70,
+        lossRate: 1.0,
+        lossHa1990_2020: 380000,
+        protectionLevel: 'partial',
+        carbonTonnesHa: 1200,
+        speciesCount: 18,
+        dominantSpecies: 'Rhizophora mucronata',
+        threatsMain: ['Huile de palme', 'Crevetticulture', 'Charbon de bois'],
+        submersionRise: 2.5,
+        gmwCoverage: true,
+        color: '#FF9800',
+        coordinates: [133.0, -4.5],
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: [133.0, -4.5],
+      },
+    },
+
+    // ── AUSTRALIE ─────────────────────────────────────
+    {
+      type: 'Feature',
+      properties: {
+        id: 'australia-gulf-carpentaria',
+        name: 'Golfe de Carpentarie',
+        country: 'Australie',
+        flag: '🇦🇺',
+        region: 'Océanie',
+        areaHa: 350000,
+        healthIndex: 0.68,
+        lossRate: 0.9,
+        lossHa1990_2020: 45000,
+        protectionLevel: 'partial',
+        carbonTonnesHa: 760,
+        speciesCount: 10,
+        dominantSpecies: 'Avicennia marina',
+        threatsMain: ['Sécheresse extrême', 'Canicules marines', 'Élevage bovin'],
+        submersionRise: 4.0,
+        gmwCoverage: true,
+        color: '#FF9800',
+        coordinates: [136.0, -15.5],
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: [136.0, -15.5],
+      },
+    },
+  ],
+};
+
+// ─────────────────────────────────────────────
+// ZONES VULNÉRABLES — PACIFIQUE & MONDE
 // ─────────────────────────────────────────────
 
 export const VULNERABLE_ZONES = {
   type: 'FeatureCollection',
   features: [
-
-    // ══════════════════════════════════════════════
-    // 🇳🇨  NOUVELLE-CALÉDONIE
-    // ══════════════════════════════════════════════
     {
       type: 'Feature',
       properties: {
@@ -156,10 +407,10 @@ export const VULNERABLE_ZONES = {
         elevation: 2,
         population: 94285,
         populationAtRisk2100: 62000,
-        gdpAtRisk: 4.2,          // Milliards USD
+        gdpAtRisk: 4.2,
         criticalInfra: ['Aéroport Magenta', 'Port autonome', 'Hôpital Gaston-Bourret'],
-        description: 'Capitale de la Nouvelle-Calédonie. La baie des Citrons, Anse Vata et le front de mer du centre-ville sont en première ligne de submersion.',
-        submersionRise: 2,       // Rise (m) à partir duquel la zone est submergée
+        description: 'Capitale de la Nouvelle-Calédonie. La baie des Citrons, Anse Vata et le front de mer sont en première ligne de submersion.',
+        submersionRise: 2,
         sources: ['DIMENC', 'IRD Nouméa', 'NOAA'],
         coordinates: [166.4416, -22.2758],
       },
@@ -200,38 +451,13 @@ export const VULNERABLE_ZONES = {
         populationAtRisk2100: 5000,
         gdpAtRisk: 0.08,
         criticalInfra: ['Port de Wé', 'Aéroport de Lifou'],
-        description: 'Plus grande île des Loyauté, falaises calcaires vulnérables à l\'érosion marine accélérée.',
+        description: "Plus grande île des Loyauté, falaises calcaires vulnérables à l'érosion marine accélérée.",
         submersionRise: 3,
         sources: ['SPC', 'Province des Îles'],
         coordinates: [167.1, -20.9],
       },
       geometry: { type: 'Point', coordinates: [167.1, -20.9] },
     },
-    {
-      type: 'Feature',
-      properties: {
-        id: 'koumac',
-        name: 'Koumac',
-        country: 'Nouvelle-Calédonie',
-        flag: '🇳🇨',
-        region: 'Pacifique Sud-Ouest',
-        subRegion: 'Grande Terre – Nord',
-        elevation: 3,
-        population: 3500,
-        populationAtRisk2100: 1800,
-        gdpAtRisk: 0.12,
-        criticalInfra: ['Mines de nickel', 'Port minier'],
-        description: 'Commune du Nord. Plaines côtières et mangroves exposées aux tempêtes tropicales.',
-        submersionRise: 3,
-        sources: ['DIMENC'],
-        coordinates: [164.2834, -20.5667],
-      },
-      geometry: { type: 'Point', coordinates: [164.2834, -20.5667] },
-    },
-
-    // ══════════════════════════════════════════════
-    // 🇫🇯  FIDJI
-    // ══════════════════════════════════════════════
     {
       type: 'Feature',
       properties: {
@@ -256,31 +482,6 @@ export const VULNERABLE_ZONES = {
     {
       type: 'Feature',
       properties: {
-        id: 'lautoka',
-        name: 'Lautoka',
-        country: 'Fidji',
-        flag: '🇫🇯',
-        region: 'Pacifique Sud',
-        subRegion: 'Viti Levu',
-        elevation: 3,
-        population: 71573,
-        populationAtRisk2100: 45000,
-        gdpAtRisk: 0.9,
-        criticalInfra: ['Port sucrier', 'Industrie canne à sucre'],
-        description: 'Deuxième ville fidjienne. L\'industrie sucrière côtière est menacée par la montée des eaux.',
-        submersionRise: 3,
-        sources: ['SPREP', 'Pacific-Australia Climate Change Science'],
-        coordinates: [177.4522, -17.6139],
-      },
-      geometry: { type: 'Point', coordinates: [177.4522, -17.6139] },
-    },
-
-    // ══════════════════════════════════════════════
-    // 🇻🇺  VANUATU
-    // ══════════════════════════════════════════════
-    {
-      type: 'Feature',
-      properties: {
         id: 'port-vila',
         name: 'Port-Vila',
         country: 'Vanuatu',
@@ -299,10 +500,6 @@ export const VULNERABLE_ZONES = {
       },
       geometry: { type: 'Point', coordinates: [168.3219, -17.7334] },
     },
-
-    // ══════════════════════════════════════════════
-    // 🇸🇧  SALOMON
-    // ══════════════════════════════════════════════
     {
       type: 'Feature',
       properties: {
@@ -317,17 +514,13 @@ export const VULNERABLE_ZONES = {
         populationAtRisk2100: 65000,
         gdpAtRisk: 0.3,
         criticalInfra: ['Aéroport Henderson', 'Port Jackson'],
-        description: 'Capitale des Salomon. Des îles Solomon ont déjà été englouties (Nuatambu, 2016).',
+        description: "Capitale des Salomon. Des îles Solomon ont déjà été englouties (Nuatambu, 2016).",
         submersionRise: 2,
         sources: ['Solomon Islands Meteorological Service', 'Nature Climate Change 2016'],
         coordinates: [159.9729, -9.4438],
       },
       geometry: { type: 'Point', coordinates: [159.9729, -9.4438] },
     },
-
-    // ══════════════════════════════════════════════
-    // 🇰🇮  KIRIBATI
-    // ══════════════════════════════════════════════
     {
       type: 'Feature',
       properties: {
@@ -342,17 +535,13 @@ export const VULNERABLE_ZONES = {
         populationAtRisk2100: 56388,
         gdpAtRisk: 0.1,
         criticalInfra: ['Aéroport Bonriki', 'Eau douce', 'Toutes infrastructures'],
-        description: 'Atoll menacé d\'engloutissement total. Premier territoire au monde à devoir relocaliser entièrement sa population. Élévation max 3m.',
+        description: "Atoll menacé d'engloutissement total. Premier territoire au monde à devoir relocaliser entièrement sa population.",
         submersionRise: 1,
         sources: ['KMS', 'SPREP', 'Nature 2020'],
         coordinates: [173.0, 1.3],
       },
       geometry: { type: 'Point', coordinates: [173.0, 1.3] },
     },
-
-    // ══════════════════════════════════════════════
-    // 🇹🇻  TUVALU
-    // ══════════════════════════════════════════════
     {
       type: 'Feature',
       properties: {
@@ -366,18 +555,14 @@ export const VULNERABLE_ZONES = {
         population: 6320,
         populationAtRisk2100: 6320,
         gdpAtRisk: 0.02,
-        criticalInfra: ['Aéroport Funafuti', 'Réserve d\'eau douce'],
-        description: 'Nation insulaire à 2m d\'altitude max. Symbole mondial de la crise climatique. Plan d\'évacuation vers NZ en cours.',
+        criticalInfra: ["Aéroport Funafuti", "Réserve d'eau douce"],
+        description: "Nation insulaire à 2m d'altitude max. Symbole mondial de la crise climatique. Plan d'évacuation vers NZ en cours.",
         submersionRise: 1,
         sources: ['TMTTI', 'Nature Communications 2018', 'SPREP'],
         coordinates: [179.1966, -8.5211],
       },
       geometry: { type: 'Point', coordinates: [179.1966, -8.5211] },
     },
-
-    // ══════════════════════════════════════════════
-    // 🇼🇸  SAMOA
-    // ══════════════════════════════════════════════
     {
       type: 'Feature',
       properties: {
@@ -391,93 +576,14 @@ export const VULNERABLE_ZONES = {
         population: 36735,
         populationAtRisk2100: 25000,
         gdpAtRisk: 0.25,
-        criticalInfra: ['Port d\'Apia', 'CBD côtier'],
-        description: 'Capitale du Samoa indépendant. Front de mer et zone portuaire très exposés aux cyclones et submersions.',
+        criticalInfra: ["Port d'Apia", 'CBD côtier'],
+        description: "Capitale du Samoa indépendant. Front de mer et zone portuaire très exposés aux cyclones et submersions.",
         submersionRise: 2,
         sources: ['SAMOA Meteorology Division', 'SPREP'],
         coordinates: [-171.7667, -13.8333],
       },
       geometry: { type: 'Point', coordinates: [-171.7667, -13.8333] },
     },
-
-    // ══════════════════════════════════════════════
-    // 🇵🇬  PAPOUASIE-NOUVELLE-GUINÉE
-    // ══════════════════════════════════════════════
-    {
-      type: 'Feature',
-      properties: {
-        id: 'port-moresby',
-        name: 'Port Moresby',
-        country: 'Papouasie-Nouvelle-Guinée',
-        flag: '🇵🇬',
-        region: 'Mélanésie',
-        subRegion: 'Papouasie',
-        elevation: 4,
-        population: 364145,
-        populationAtRisk2100: 120000,
-        gdpAtRisk: 2.1,
-        criticalInfra: ['Port International', 'Aéroport Jackson'],
-        description: 'Plus grande ville du Pacifique insulaire. Zones côtières et Motu-Koitabu exposés.',
-        submersionRise: 4,
-        sources: ['PNGMA', 'ADB Pacific Studies'],
-        coordinates: [147.1925, -9.4438],
-      },
-      geometry: { type: 'Point', coordinates: [147.1925, -9.4438] },
-    },
-
-    // ══════════════════════════════════════════════
-    // 🇦🇺  AUSTRALIE
-    // ══════════════════════════════════════════════
-    {
-      type: 'Feature',
-      properties: {
-        id: 'sydney',
-        name: 'Sydney',
-        country: 'Australie',
-        flag: '🇦🇺',
-        region: 'Océanie',
-        subRegion: 'Nouvelle-Galles du Sud',
-        elevation: 3,
-        population: 5300000,
-        populationAtRisk2100: 1200000,
-        gdpAtRisk: 42.0,
-        criticalInfra: ['Opéra de Sydney', 'Darling Harbour', 'Aéroport Kingsford Smith'],
-        description: 'Métropole mondiale. Bondi Beach, Manly et les plages exposées. Coût estimé : 40+ milliards USD.',
-        submersionRise: 3,
-        sources: ['CSIRO', 'NSW Government Climate'],
-        coordinates: [151.2093, -33.8688],
-      },
-      geometry: { type: 'Point', coordinates: [151.2093, -33.8688] },
-    },
-
-    // ══════════════════════════════════════════════
-    // 🇯🇵  JAPON
-    // ══════════════════════════════════════════════
-    {
-      type: 'Feature',
-      properties: {
-        id: 'tokyo',
-        name: 'Tokyo',
-        country: 'Japon',
-        flag: '🇯🇵',
-        region: 'Asie-Pacifique',
-        subRegion: 'Honshū',
-        elevation: 5,
-        population: 37000000,
-        populationAtRisk2100: 8000000,
-        gdpAtRisk: 250.0,
-        criticalInfra: ['Aéroport Haneda', 'Fukushima-zone côtière', 'Réseau métro'],
-        description: 'Plus grande mégalopole mondiale. Une grande partie de Tokyo est sous le niveau de la mer, protégée par des digues.',
-        submersionRise: 5,
-        sources: ['JMA', 'Tokyo Metropolitan Government'],
-        coordinates: [139.6917, 35.6895],
-      },
-      geometry: { type: 'Point', coordinates: [139.6917, 35.6895] },
-    },
-
-    // ══════════════════════════════════════════════
-    // 🇮🇩  INDONÉSIE
-    // ══════════════════════════════════════════════
     {
       type: 'Feature',
       properties: {
@@ -492,17 +598,13 @@ export const VULNERABLE_ZONES = {
         populationAtRisk2100: 10770487,
         gdpAtRisk: 180.0,
         criticalInfra: ['Aéroport Soekarno-Hatta', 'Zone industrielle côtière'],
-        description: 'Ville qui s\'enfonce de 25 cm/an. Capitale déjà partiellement abandonnée, déménagement à Nusantara en cours. Emblème de l\'urgence climatique.',
+        description: "Ville qui s'enfonce de 25 cm/an. Capitale déjà partiellement abandonnée. Emblème de l'urgence climatique.",
         submersionRise: 1,
         sources: ['BMKG', 'Nature Geoscience 2023', 'WorldBank'],
         coordinates: [106.8456, -6.2088],
       },
       geometry: { type: 'Point', coordinates: [106.8456, -6.2088] },
     },
-
-    // ══════════════════════════════════════════════
-    // 🇺🇸  USA – CÔTE PACIFIQUE
-    // ══════════════════════════════════════════════
     {
       type: 'Feature',
       properties: {
@@ -516,18 +618,14 @@ export const VULNERABLE_ZONES = {
         population: 350964,
         populationAtRisk2100: 95000,
         gdpAtRisk: 18.5,
-        criticalInfra: ['Pearl Harbor', 'Waikiki Beach', 'Aéroport Daniel K. Inouye'],
-        description: 'Waikiki Beach déjà en érosion active. Les plages d\'Oahu pourraient disparaître d\'ici 2100.',
+        criticalInfra: ['Pearl Harbor', 'Waikiki Beach', "Aéroport Daniel K. Inouye"],
+        description: "Waikiki Beach déjà en érosion active. Les plages d'Oahu pourraient disparaître d'ici 2100.",
         submersionRise: 2,
         sources: ['NOAA', 'UHSLC', 'Hawaii Climate Commission'],
         coordinates: [-157.8583, 21.3069],
       },
       geometry: { type: 'Point', coordinates: [-157.8583, 21.3069] },
     },
-
-    // ══════════════════════════════════════════════
-    // 🧊  SOURCES DE FONTE — PÔLES
-    // ══════════════════════════════════════════════
     {
       type: 'Feature',
       properties: {
@@ -545,7 +643,7 @@ export const VULNERABLE_ZONES = {
         description: 'Fonte du Groenland = +7 m de montée des eaux mondiale si totale. Perd 280 Gt/an actuellement.',
         submersionRise: 9999,
         isIceSource: true,
-        meltContribution: 7.0,   // Mètres si fonte totale
+        meltContribution: 7.0,
         sources: ['NSIDC', 'Nature 2021', 'ESA CryoSat'],
         coordinates: [-42.6043, 71.7069],
       },
@@ -578,51 +676,22 @@ export const VULNERABLE_ZONES = {
 };
 
 // ─────────────────────────────────────────────
-// 3. DONNÉES HISTORIQUES DE MONTÉE DES EAUX
-//    Source future : NOAA Tide Gauge + satellite altimetry
-//    Fréquence annuelle 1993–2024 (mockée)
+// DONNÉES HISTORIQUES MONTÉE DES EAUX
 // ─────────────────────────────────────────────
 
 export const SEA_LEVEL_HISTORICAL = [
-  // [year, anomaly_mm] — référence 1993 = 0 mm
-  [1993, 0],
-  [1994, 8],
-  [1995, 14],
-  [1996, 22],
-  [1997, 18],   // El Niño
-  [1998, 2],    // La Niña drop
-  [1999, 12],
-  [2000, 25],
-  [2001, 33],
-  [2002, 44],
-  [2003, 52],
-  [2004, 58],
-  [2005, 65],
-  [2006, 70],
-  [2007, 80],
-  [2008, 72],
-  [2009, 86],
-  [2010, 72],   // La Niña dip
-  [2011, 60],   // La Niña forte
-  [2012, 88],
-  [2013, 97],
-  [2014, 107],
-  [2015, 101],  // El Niño
-  [2016, 115],
-  [2017, 122],
-  [2018, 130],
-  [2019, 140],
-  [2020, 138],
-  [2021, 148],
-  [2022, 155],
-  [2023, 168],
-  [2024, 182],  // Record
+  [1993, 0], [1994, 8], [1995, 14], [1996, 22],
+  [1997, 18], [1998, 2], [1999, 12], [2000, 25],
+  [2001, 33], [2002, 44], [2003, 52], [2004, 58],
+  [2005, 65], [2006, 70], [2007, 80], [2008, 72],
+  [2009, 86], [2010, 72], [2011, 60], [2012, 88],
+  [2013, 97], [2014, 107], [2015, 101], [2016, 115],
+  [2017, 122], [2018, 130], [2019, 140], [2020, 138],
+  [2021, 148], [2022, 155], [2023, 168], [2024, 182],
 ].map(([year, mm]) => ({ year, mm, m: mm / 1000 }));
 
 // ─────────────────────────────────────────────
-// 4. CYCLONES HISTORIQUES PACIFIQUE
-//    Source future : IBTrACS (NOAA) — Best Track
-//    Structure prête pour trajectoires animées
+// CYCLONES HISTORIQUES PACIFIQUE
 // ─────────────────────────────────────────────
 
 export const CYCLONES_PACIFIC = [
@@ -639,13 +708,12 @@ export const CYCLONES_PACIFIC = [
     description: 'Cyclone le plus intense jamais enregistré dans le Pacifique Sud.',
     color: '#FF1744',
     track: [
-      { time: '2016-02-11T00:00:00Z', lon: 175.5, lat: -12.2, windKt: 60, cat: 1 },
-      { time: '2016-02-14T00:00:00Z', lon: 171.0, lat: -14.5, windKt: 90, cat: 2 },
+      { time: '2016-02-11T00:00:00Z', lon: 175.5, lat: -12.2, windKt: 60,  cat: 1 },
+      { time: '2016-02-14T00:00:00Z', lon: 171.0, lat: -14.5, windKt: 90,  cat: 2 },
       { time: '2016-02-17T00:00:00Z', lon: 170.2, lat: -17.0, windKt: 140, cat: 4 },
       { time: '2016-02-19T12:00:00Z', lon: 172.5, lat: -17.8, windKt: 180, cat: 5 },
-      { time: '2016-02-20T00:00:00Z', lon: 177.4, lat: -17.6, windKt: 180, cat: 5 }, // Landfall Koro
+      { time: '2016-02-20T00:00:00Z', lon: 177.4, lat: -17.6, windKt: 180, cat: 5 },
       { time: '2016-02-21T00:00:00Z', lon: 180.0, lat: -17.0, windKt: 120, cat: 3 },
-      { time: '2016-02-23T00:00:00Z', lon: -175.0, lat: -14.0, windKt: 80, cat: 2 },
     ],
   },
   {
@@ -661,113 +729,36 @@ export const CYCLONES_PACIFIC = [
     description: 'Cyclone cat-5 dévastant le Vanuatu. 90% des habitations de Port-Vila détruites.',
     color: '#FF6D00',
     track: [
-      { time: '2015-03-06T00:00:00Z', lon: 165.0, lat: -8.0, windKt: 40, cat: 1 },
+      { time: '2015-03-06T00:00:00Z', lon: 165.0, lat:  -8.0, windKt:  40, cat: 1 },
       { time: '2015-03-10T00:00:00Z', lon: 168.0, lat: -12.0, windKt: 100, cat: 3 },
-      { time: '2015-03-13T06:00:00Z', lon: 168.3, lat: -17.7, windKt: 165, cat: 5 }, // Landfall Vanuatu
+      { time: '2015-03-13T06:00:00Z', lon: 168.3, lat: -17.7, windKt: 165, cat: 5 },
       { time: '2015-03-15T00:00:00Z', lon: 170.0, lat: -22.0, windKt: 100, cat: 3 },
-      { time: '2015-03-16T00:00:00Z', lon: 172.0, lat: -27.0, windKt: 60, cat: 1 },
-    ],
-  },
-  {
-    id: 'harold-2020',
-    name: 'Harold',
-    year: 2020,
-    category: 4,
-    peakWindsKnots: 150,
-    minPressureHpa: 905,
-    country: 'Vanuatu / Fidji / Salomon',
-    deaths: 28,
-    damageUSD: 200e6,
-    description: 'Cyclone traversant plusieurs archipels pendant la pandémie COVID. Double catastrophe.',
-    color: '#FF9100',
-    track: [
-      { time: '2020-04-01T00:00:00Z', lon: 160.0, lat: -8.5, windKt: 55, cat: 1 },
-      { time: '2020-04-04T00:00:00Z', lon: 163.0, lat: -12.0, windKt: 100, cat: 3 },
-      { time: '2020-04-06T00:00:00Z', lon: 166.0, lat: -14.5, windKt: 140, cat: 4 },
-      { time: '2020-04-06T18:00:00Z', lon: 167.0, lat: -15.5, windKt: 150, cat: 4 }, // Espiritu Santo
-      { time: '2020-04-09T00:00:00Z', lon: 170.5, lat: -18.0, windKt: 130, cat: 4 },
-      { time: '2020-04-11T00:00:00Z', lon: 176.0, lat: -20.0, windKt: 80, cat: 2 },
-    ],
-  },
-  {
-    id: 'yasa-2020',
-    name: 'Yasa',
-    year: 2020,
-    category: 5,
-    peakWindsKnots: 165,
-    minPressureHpa: 899,
-    country: 'Fidji',
-    deaths: 4,
-    damageUSD: 160e6,
-    description: 'Deuxième cyclone cat-5 à frapper les Fidji après Winston. Signe d\'une intensification climatique.',
-    color: '#D50000',
-    track: [
-      { time: '2020-12-15T00:00:00Z', lon: 170.0, lat: -10.0, windKt: 70, cat: 1 },
-      { time: '2020-12-17T00:00:00Z', lon: 174.0, lat: -13.0, windKt: 120, cat: 4 },
-      { time: '2020-12-17T18:00:00Z', lon: 178.0, lat: -15.0, windKt: 165, cat: 5 },
-      { time: '2020-12-18T06:00:00Z', lon: 178.5, lat: -17.0, windKt: 165, cat: 5 }, // Landfall Fidji
-      { time: '2020-12-19T00:00:00Z', lon: 179.0, lat: -20.0, windKt: 100, cat: 3 },
-    ],
-  },
-  {
-    id: 'lola-2023',
-    name: 'Lola',
-    year: 2023,
-    category: 4,
-    peakWindsKnots: 130,
-    minPressureHpa: 928,
-    country: 'Vanuatu',
-    deaths: 6,
-    damageUSD: 50e6,
-    description: 'Cyclone hors-saison record, frappant en octobre. Preuve de la désaisonnalisation climatique.',
-    color: '#FF6E40',
-    track: [
-      { time: '2023-10-20T00:00:00Z', lon: 167.0, lat: -8.0, windKt: 50, cat: 1 },
-      { time: '2023-10-22T00:00:00Z', lon: 168.5, lat: -12.5, windKt: 100, cat: 3 },
-      { time: '2023-10-22T18:00:00Z', lon: 168.3, lat: -14.8, windKt: 130, cat: 4 }, // Landfall
-      { time: '2023-10-24T00:00:00Z', lon: 169.0, lat: -20.0, windKt: 70, cat: 2 },
     ],
   },
 ];
 
 // ─────────────────────────────────────────────
-// 5. DONNÉES TEMPÉRATURE OCÉAN PACIFIQUE
-//    Source future : NOAA OISST, Copernicus Marine
+// UTILITAIRES
 // ─────────────────────────────────────────────
 
-export const OCEAN_TEMP_ANOMALIES = [
-  // [year, anomaly_celsius vs 1981-2010 baseline]
-  { year: 1993, anomaly: 0.12 },
-  { year: 2000, anomaly: 0.21 },
-  { year: 2010, anomaly: 0.35 },
-  { year: 2015, anomaly: 0.61 }, // Super El Niño
-  { year: 2020, anomaly: 0.72 },
-  { year: 2023, anomaly: 0.98 }, // Record mondial
-  { year: 2024, anomaly: 1.11 }, // Record battu
-];
-
-// ─────────────────────────────────────────────
-// 6. UTILITAIRES — Calculs de risque
-// ─────────────────────────────────────────────
-
-/**
- * Retourne le statut de risque d'une zone selon la montée des eaux.
- * Architecture prête pour injection de données réelles.
- */
 export const getZoneStatus = (elevation, seaRise) => {
   const margin = elevation - seaRise;
-  if (margin <= 0)  return { status: 'submergé',  label: 'Submergé',   color: '#D32F2F', urgency: 4 };
-  if (margin <= 0.5) return { status: 'critique', label: 'Critique',   color: '#E64A19', urgency: 3 };
-  if (margin <= 1)  return { status: 'danger',    label: 'En danger',  color: '#F57C00', urgency: 3 };
-  if (margin <= 3)  return { status: 'menacé',    label: 'Menacé',     color: '#FBC02D', urgency: 2 };
-  if (margin <= 8)  return { status: 'vigilance', label: 'Vigilance',  color: '#7CB342', urgency: 1 };
-  return                     { status: 'sûr',     label: 'Sûr',        color: '#43A047', urgency: 0 };
+  if (margin <= 0)   return { status: 'submergé',  label: 'Submergé',   color: '#D32F2F', urgency: 4 };
+  if (margin <= 0.5) return { status: 'critique',  label: 'Critique',   color: '#E64A19', urgency: 3 };
+  if (margin <= 1)   return { status: 'danger',    label: 'En danger',  color: '#F57C00', urgency: 3 };
+  if (margin <= 3)   return { status: 'menacé',    label: 'Menacé',     color: '#FBC02D', urgency: 2 };
+  if (margin <= 8)   return { status: 'vigilance', label: 'Vigilance',  color: '#7CB342', urgency: 1 };
+  return                    { status: 'sûr',       label: 'Sûr',        color: '#43A047', urgency: 0 };
 };
 
-/**
- * Interpole entre deux scénarios selon la valeur de montée actuelle.
- * Utile pour animer fluidement les couleurs/intensités.
- */
+export const getMangroveStatus = (zone) => {
+  const hi = zone.properties.healthIndex;
+  if (hi >= 0.75) return { label: 'Saine',     color: '#2E7D32', urgency: 0 };
+  if (hi >= 0.55) return { label: 'Dégradée',  color: '#F57C00', urgency: 1 };
+  if (hi >= 0.35) return { label: 'Critique',  color: '#E64A19', urgency: 2 };
+  return               { label: 'Effondrée', color: '#B71C1C', urgency: 3 };
+};
+
 export const interpolateScenario = (seaRise) => {
   const scenarios = SEA_LEVEL_SCENARIOS;
   for (let i = 0; i < scenarios.length - 1; i++) {
@@ -776,9 +767,7 @@ export const interpolateScenario = (seaRise) => {
     if (seaRise >= a.rise && seaRise <= b.rise) {
       const t = (seaRise - a.rise) / (b.rise - a.rise);
       return {
-        t,
-        from: a,
-        to: b,
+        t, from: a, to: b,
         waveIntensity: a.waveIntensity + t * (b.waveIntensity - a.waveIntensity),
         particleCount: Math.round(a.particleCount + t * (b.particleCount - a.particleCount)),
         year: Math.round(a.year + t * (b.year - a.year)),
@@ -788,7 +777,6 @@ export const interpolateScenario = (seaRise) => {
       };
     }
   }
-  // Au-delà du max
   return {
     t: 1,
     from: scenarios[scenarios.length - 2],
@@ -800,21 +788,12 @@ export const interpolateScenario = (seaRise) => {
   };
 };
 
-/**
- * Retourne le scénario IPCC le plus proche d'une valeur de montée.
- */
-export const getClosestScenario = (seaRise) => {
-  return SEA_LEVEL_SCENARIOS.reduce((prev, curr) =>
+export const getClosestScenario = (seaRise) =>
+  SEA_LEVEL_SCENARIOS.reduce((prev, curr) =>
     Math.abs(curr.rise - seaRise) < Math.abs(prev.rise - seaRise) ? curr : prev
   );
-};
 
-/**
- * Population mondiale à risque estimée selon le niveau de montée.
- * Source future : CoastalDEM v2 (Kulp & Strauss, Nature 2019)
- */
 export const getPopulationAtRisk = (seaRise) => {
-  // Mock data basée sur Nature 2019 / Kulp & Strauss
   const lookup = [
     { rise: 0,    pop: 0 },
     { rise: 0.3,  pop: 70e6 },
@@ -825,8 +804,7 @@ export const getPopulationAtRisk = (seaRise) => {
     { rise: 70.0, pop: 4500e6 },
   ];
   for (let i = 0; i < lookup.length - 1; i++) {
-    const a = lookup[i];
-    const b = lookup[i + 1];
+    const a = lookup[i], b = lookup[i + 1];
     if (seaRise >= a.rise && seaRise <= b.rise) {
       const t = (seaRise - a.rise) / (b.rise - a.rise);
       return Math.round(a.pop + t * (b.pop - a.pop));
