@@ -1,8 +1,4 @@
-// components/Nav/Nav.scss
-// ============================================================
-// Pacific Dataviz Challenge 2026
-// Navigation — glassmorphism + transitions
-// ============================================================
+// src/components/Nav/Nav.scss
 
 .nav {
   position: fixed;
@@ -12,12 +8,12 @@
   z-index: 1000;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 2rem;
-  height: 60px;
+  gap: 0;
+  padding: 0 1.5rem;
+  height: 58px;
   background: var(--color-nav-bg);
-  backdrop-filter: var(--blur-glass);
-  -webkit-backdrop-filter: var(--blur-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--color-border);
   transition:
     background 0.3s ease,
@@ -26,113 +22,214 @@
   &--scrolled {
     box-shadow: var(--shadow-card);
   }
+}
 
-  // ─── Logo ──────────────────────────────────────────────────
-  &__logo {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    text-decoration: none;
+.nav__logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--color-text-primary);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+  margin-right: 1.5rem;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  span {
+    color: var(--color-accent-cyan);
+  }
+}
+
+.nav__logo-icon {
+  font-size: 1.2rem;
+}
+
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  list-style: none;
+  flex: 1;
+}
+
+.nav__link {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  border-radius: 7px;
+  text-decoration: none;
+  color: var(--color-text-secondary);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition:
+    color 0.2s,
+    background 0.2s;
+  white-space: nowrap;
+
+  &:hover {
     color: var(--color-text-primary);
-    font-family: var(--font-display);
-    font-size: 1.1rem;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    transition: opacity 0.2s;
-
-    &:hover {
-      opacity: 0.8;
-    }
-
-    &-icon {
-      font-size: 1.3rem;
-    }
-
-    &-text span {
-      color: var(--color-accent-cyan);
-    }
+    background: var(--color-bg-glass);
   }
 
-  // ─── Links ─────────────────────────────────────────────────
-  &__links {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    list-style: none;
-  }
-
-  &__link {
-    display: block;
-    padding: 0.4rem 0.9rem;
-    text-decoration: none;
-    color: var(--color-text-secondary);
-    font-family: var(--font-display);
-    font-size: 0.85rem;
+  &--active {
+    color: var(--color-accent-cyan);
+    background: rgba(0, 230, 255, 0.08);
     font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    border-radius: 6px;
-    transition:
-      color 0.2s,
-      background 0.2s;
 
-    &:hover {
-      color: var(--color-text-primary);
-      background: var(--color-bg-glass);
-    }
-
-    &--active {
-      color: var(--color-accent-cyan);
-      background: rgba(0, 230, 255, 0.08);
+    [data-theme="light"] & {
+      background: rgba(0, 100, 200, 0.08);
     }
   }
+}
 
-  // ─── Controls ──────────────────────────────────────────────
-  &__controls {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+.nav__link-icon {
+  font-size: 13px;
+}
+.nav__link-label {
+  font-size: 0.82rem;
+}
+
+.nav__controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.nav__btn {
+  padding: 5px 10px;
+  background: var(--color-bg-glass);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  color: var(--color-text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  letter-spacing: 0.05em;
+
+  &:hover {
+    border-color: var(--color-accent-cyan);
+    color: var(--color-accent-cyan);
+    background: rgba(0, 230, 255, 0.06);
+  }
+}
+
+// Burger mobile
+.nav__burger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  margin-left: 8px;
+
+  span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: var(--color-text-secondary);
+    border-radius: 1px;
+    transition: all 0.25s;
   }
 
-  &__btn {
-    padding: 0.35rem 0.8rem;
+  &--open span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  &--open span:nth-child(2) {
+    opacity: 0;
+  }
+  &--open span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+}
+
+// Menu mobile
+.nav__mobile {
+  position: fixed;
+  top: 58px;
+  left: 0;
+  right: 0;
+  background: var(--color-nav-bg);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--color-border);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 999;
+}
+
+.nav__mobile-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s;
+
+  &:hover,
+  &--active {
+    color: var(--color-accent-cyan);
+    background: rgba(0, 230, 255, 0.08);
+  }
+}
+
+.nav__mobile-controls {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--color-border);
+
+  button {
+    flex: 1;
+    padding: 8px;
     background: var(--color-bg-glass);
     border: 1px solid var(--color-border);
     border-radius: 6px;
     color: var(--color-text-secondary);
     font-family: var(--font-mono);
     font-size: 0.75rem;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
-
-    &:hover {
-      border-color: var(--color-border-hover);
-      color: var(--color-text-primary);
-      background: rgba(0, 230, 255, 0.06);
-    }
-
-    &--lang {
-      letter-spacing: 0.1em;
-      font-weight: 700;
-    }
   }
 }
 
-// ─── Responsive ─────────────────────────────────────────────
-@media (max-width: 640px) {
-  .nav {
-    padding: 0 1rem;
-
-    &__links {
-      display: none; // menu burger à ajouter en V2
-    }
-
-    &__logo-text {
-      display: none;
-    }
-    &__logo-icon {
-      font-size: 1.5rem;
-    }
+@media (max-width: 860px) {
+  .nav__links {
+    display: none;
+  }
+  .nav__burger {
+    display: flex;
+  }
+  .nav__controls {
+    display: none;
+  }
+  .nav__logo-text {
+    display: none;
+  }
+  .nav__logo-icon {
+    font-size: 1.5rem;
   }
 }

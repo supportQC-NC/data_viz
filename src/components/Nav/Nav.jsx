@@ -1,7 +1,7 @@
-// components/Nav/Nav.jsx
+// src/components/Nav/Nav.jsx
 // ============================================================
 // Pacific Dataviz Challenge 2026
-// Navigation globale — dark/light + fr/en + routes
+// Navigation — 5 routes + theme + lang via Redux direct
 // ============================================================
 
 import React, { useState, useEffect } from "react";
@@ -15,21 +15,26 @@ import {
 } from "../../store/slices/uiSlice";
 import "./Nav.scss";
 
-// Traductions nav
-const NAV_LABELS = {
+const T = {
   fr: {
-    map: "Carte",
+    map: "Montée des eaux",
+    cyclones: "Cyclones",
+    surcote: "Surcote",
     data: "Données",
     about: "À propos",
-    theme: { dark: "☀ Clair", light: "◐ Sombre" },
     lang: "EN",
+    themeDark: "☀ Clair",
+    themeLight: "◐ Sombre",
   },
   en: {
-    map: "Map",
+    map: "Sea Level",
+    cyclones: "Cyclones",
+    surcote: "Storm surge",
     data: "Data",
     about: "About",
-    theme: { dark: "☀ Light", light: "◐ Dark" },
     lang: "FR",
+    themeDark: "☀ Light",
+    themeLight: "◐ Dark",
   },
 };
 
@@ -38,15 +43,28 @@ export default function Nav() {
   const theme = useSelector(selectTheme);
   const lang = useSelector(selectLang);
   const location = useLocation();
-  const t = NAV_LABELS[lang];
-
-  // Scroll effect
+  const t = T[lang];
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    const fn = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", fn, { passive: true });
+    return () => window.removeEventListener("scroll", fn);
   }, []);
+
+  // Ferme le menu mobile au changement de route
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
+
+  const links = [
+    { to: "/map", label: t.map, icon: "🌊" },
+    { to: "/cyclones", label: t.cyclones, icon: "🌀" },
+    { to: "/surcote", label: t.surcote, icon: "🏖" },
+    { to: "/data", label: t.data, icon: "📊" },
+    { to: "/about", label: t.about, icon: "ℹ" },
+  ];
 
   return (
     <nav className={`nav ${scrolled ? "nav--scrolled" : ""}`} role="navigation">
@@ -54,42 +72,25 @@ export default function Nav() {
       <NavLink to="/" className="nav__logo" aria-label="Accueil">
         <span className="nav__logo-icon">🌊</span>
         <span className="nav__logo-text">
-          Pacific<span>Storm</span>
+          Pacific<span>Shield</span>
         </span>
       </NavLink>
 
-      {/* Links */}
+      {/* Links desktop */}
       <ul className="nav__links" role="list">
-        <li>
-          <NavLink
-            to="/map"
-            className={({ isActive }) =>
-              `nav__link ${isActive ? "nav__link--active" : ""}`
-            }
-          >
-            {t.map}
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to="/data"
-            className={({ isActive }) =>
-              `nav__link ${isActive ? "nav__link--active" : ""}`
-            }
-          >
-            {t.data}
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to="/about"
-            className={({ isActive }) =>
-              `nav__link ${isActive ? "nav__link--active" : ""}`
-            }
-          >
-            {t.about}
-          </NavLink>
-        </li>
+        {links.map(({ to, label, icon }) => (
+          <li key={to}>
+            <NavLink
+              to={to}
+              className={({ isActive }) =>
+                `nav__link ${isActive ? "nav__link--active" : ""}`
+              }
+            >
+              <span className="nav__link-icon">{icon}</span>
+              <span className="nav__link-label">{label}</span>
+            </NavLink>
+          </li>
+        ))}
       </ul>
 
       {/* Controls */}
@@ -97,18 +98,54 @@ export default function Nav() {
         <button
           className="nav__btn nav__btn--lang"
           onClick={() => dispatch(toggleLang())}
-          aria-label={`Passer en ${t.lang}`}
+          aria-label="Toggle language"
         >
           {t.lang}
         </button>
         <button
           className="nav__btn nav__btn--theme"
           onClick={() => dispatch(toggleTheme())}
-          aria-label={t.theme[theme]}
+          aria-label="Toggle theme"
         >
-          {t.theme[theme]}
+          {theme === "dark" ? t.themeDark : t.themeLight}
         </button>
       </div>
+
+      {/* Burger mobile */}
+      <button
+        className={`nav__burger ${menuOpen ? "nav__burger--open" : ""}`}
+        onClick={() => setMenuOpen((v) => !v)}
+        aria-label="Menu"
+        aria-expanded={menuOpen}
+      >
+        <span />
+        <span />
+        <span />
+      </button>
+
+      {/* Menu mobile */}
+      {menuOpen && (
+        <div className="nav__mobile">
+          {links.map(({ to, label, icon }) => (
+            <NavLink
+              key={to}
+              to={to}
+              className={({ isActive }) =>
+                `nav__mobile-link ${isActive ? "nav__mobile-link--active" : ""}`
+              }
+            >
+              <span>{icon}</span>
+              <span>{label}</span>
+            </NavLink>
+          ))}
+          <div className="nav__mobile-controls">
+            <button onClick={() => dispatch(toggleLang())}>{t.lang}</button>
+            <button onClick={() => dispatch(toggleTheme())}>
+              {theme === "dark" ? t.themeDark : t.themeLight}
+            </button>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }
