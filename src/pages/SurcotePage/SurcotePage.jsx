@@ -2,10 +2,16 @@
 // ============================================================
 // Pacific Dataviz Challenge 2026
 // Surcote côtière NC — cyclone centennal
-// Store : surcoteSlice (features, stats, filters)
+// Données : sucoteSlice  (state.surcote)
 // ============================================================
 
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
 import Map, {
   Layer,
   Source,
@@ -28,15 +34,14 @@ import {
   selectSurcoteError,
   selectDisplayThreshold,
   selectVizMode,
-  selectSelectedPoint,
   SURCOTE_THRESHOLDS,
 } from "../../store/slices/sucoteSlice";
+
 import { useTheme } from "../../store/context/themeContext";
 import { useLang } from "../../store/context/langContext";
 
 const TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 
-// Palette de danger
 const DANGER_COLORS = {
   low: "#F9E537",
   moderate: "#FF9F0A",
@@ -44,13 +49,13 @@ const DANGER_COLORS = {
   extreme: "#BF5AF2",
 };
 
-const DANGER_LABELS_FR = {
+const DANGER_FR = {
   low: "Vigilance",
   moderate: "Danger",
   high: "Critique",
   extreme: "Catastrophique",
 };
-const DANGER_LABELS_EN = {
+const DANGER_EN = {
   low: "Watch",
   moderate: "Danger",
   high: "Critical",
@@ -65,83 +70,116 @@ const INITIAL_VIEW = {
   bearing: -5,
 };
 
-const DARK_STYLE = "mapbox://styles/mapbox/dark-v11";
-const LIGHT_STYLE = "mapbox://styles/mapbox/satellite-streets-v12";
-
-// Couleur en fonction de la valeur de surcote
-const surcoteToColor = (val) => {
-  if (val >= SURCOTE_THRESHOLDS.extreme) return DANGER_COLORS.extreme;
-  if (val >= SURCOTE_THRESHOLDS.high) return DANGER_COLORS.high;
-  if (val >= SURCOTE_THRESHOLDS.moderate) return DANGER_COLORS.moderate;
-  return DANGER_COLORS.low;
+const getSurcoteColor = (val) => {
+  if (!val || val < SURCOTE_THRESHOLDS.low) return DANGER_COLORS.low;
+  if (val < SURCOTE_THRESHOLDS.moderate) return DANGER_COLORS.low;
+  if (val < SURCOTE_THRESHOLDS.high) return DANGER_COLORS.moderate;
+  if (val < SURCOTE_THRESHOLDS.extreme) return DANGER_COLORS.high;
+  return DANGER_COLORS.extreme;
 };
+
+// Expression Mapbox step pour la couleur selon surcote_max
+const COLOR_EXPR = [
+  "step",
+  ["get", "surcote_max"],
+  DANGER_COLORS.low,
+  SURCOTE_THRESHOLDS.moderate,
+  DANGER_COLORS.moderate,
+  SURCOTE_THRESHOLDS.high,
+  DANGER_COLORS.high,
+  SURCOTE_THRESHOLDS.extreme,
+  DANGER_COLORS.extreme,
+];
+
+const RADIUS_EXPR = [
+  "interpolate",
+  ["linear"],
+  ["get", "surcote_max"],
+  0,
+  3,
+  4,
+  10,
+];
 
 export default function SurcotePage() {
   const dispatch = useDispatch();
   const { isDark } = useTheme();
   const { lang } = useLang();
+  const mapRef = useRef(null);
 
-  const features = useSelector(selectFilteredSurcote);
+  // ── Store ─────────────────────────────────────────────────
+  const features = useSelector(selectFilteredSurcote); // FeatureCollection | null
   const stats = useSelector(selectSurcoteStats);
   const loading = useSelector(selectSurcoteLoading);
   const error = useSelector(selectSurcoteError);
   const threshold = useSelector(selectDisplayThreshold);
   const vizMode = useSelector(selectVizMode);
-  const selected = useSelector(selectSelectedPoint);
 
   const [popup, setPopup] = useState(null);
-  const [pulse, setPulse] = useState(0);
 
   useEffect(() => {
     dispatch(loadSurcoteData());
   }, [dispatch]);
 
-  // Animation de pulsation des points extrêmes
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setPulse((p) => (p + 1) % 100);
-    }, 50);
-    return () => clearInterval(interval);
-  }, []);
+  const D = lang === "fr" ? DANGER_FR : DANGER_EN;
 
-  const dangerLabels = lang === "fr" ? DANGER_LABELS_FR : DANGER_LABELS_EN;
-
-  // GeoJSON enrichi avec les couleurs
+  // ── GeoJSON stable pour Mapbox ────────────────────────────
+  // On enrichit les features avec la valeur d'affichage choisie
   const geoData = useMemo(() => {
-    if (!features?.features) return null;
+    if (!features?.features?.length)
+      return { type: "FeatureCollection", features: [] };
     return {
       ...features,
       features: features.features.map((f) => {
-        const val =
+        const p = f.properties || {};
+        const displayVal =
           vizMode === "vague"
-            ? f.properties?.hauteur_significative_max
+            ? (p.hauteur_significative_max ?? 0)
             : vizMode === "periode"
-              ? f.properties?.periode_max
-              : f.properties?.surcote_max;
-
-        const normalized =
-          vizMode === "surcote"
-            ? val / 4.0
-            : vizMode === "vague"
-              ? val / 12.0
-              : val / 20.0;
-
+              ? (p.periode_max ?? 0)
+              : (p.surcote_max ?? 0);
         return {
           ...f,
-          properties: {
-            ...f.properties,
-            displayVal: val,
-            pointColor: surcoteToColor(f.properties?.surcote_max || 0),
-            pointRadius: 3 + (normalized || 0) * 6,
-            isExtreme:
-              (f.properties?.surcote_max || 0) >= SURCOTE_THRESHOLDS.extreme,
-          },
+          properties: { ...p, _displayVal: displayVal },
         };
       }),
     };
   }, [features, vizMode]);
 
-  const handleMapClick = useCallback(
+  // ── Expression couleur selon vizMode ─────────────────────
+  const colorExpr = useMemo(() => {
+    const field =
+      vizMode === "vague"
+        ? "hauteur_significative_max"
+        : vizMode === "periode"
+          ? "periode_max"
+          : "surcote_max";
+    if (vizMode === "surcote") return COLOR_EXPR;
+    // Pour vague/periode, gradient simple vert→rouge
+    return [
+      "interpolate",
+      ["linear"],
+      ["get", field],
+      0,
+      "#4CAF50",
+      4,
+      "#FF9100",
+      10,
+      "#FF1744",
+    ];
+  }, [vizMode]);
+
+  const radiusExpr = useMemo(() => {
+    const field =
+      vizMode === "vague"
+        ? "hauteur_significative_max"
+        : vizMode === "periode"
+          ? "periode_max"
+          : "surcote_max";
+    return ["interpolate", ["linear"], ["get", field], 0, 3, 8, 11];
+  }, [vizMode]);
+
+  const handleClick = useCallback(
     (e) => {
       if (!e.features?.length) {
         dispatch(clearSelectedPoint());
@@ -149,81 +187,72 @@ export default function SurcotePage() {
         return;
       }
       const f = e.features[0];
-      const props = f.properties;
-      setPopup({
-        longitude: e.lngLat.lng,
-        latitude: e.lngLat.lat,
-        ...props,
-      });
-      dispatch(setSelectedPoint(props));
+      const p = f.properties;
+      dispatch(setSelectedPoint(p));
+      setPopup({ longitude: e.lngLat.lng, latitude: e.lngLat.lat, ...p });
     },
     [dispatch],
   );
 
-  const mapStyle = isDark ? DARK_STYLE : LIGHT_STYLE;
+  const mapStyle = isDark
+    ? "mapbox://styles/mapbox/dark-v11"
+    : "mapbox://styles/mapbox/satellite-streets-v12";
 
-  const vizModes = [
-    {
-      key: "surcote",
-      label: lang === "fr" ? "Surcote" : "Storm surge",
-      unit: "m",
-    },
-    { key: "vague", label: lang === "fr" ? "Vague" : "Wave height", unit: "m" },
-    {
-      key: "periode",
-      label: lang === "fr" ? "Période" : "Wave period",
-      unit: "s",
-    },
+  const VIZ_MODES = [
+    { key: "surcote", label: { fr: "Surcote", en: "Storm surge" }, unit: "m" },
+    { key: "vague", label: { fr: "Vague", en: "Wave height" }, unit: "m" },
+    { key: "periode", label: { fr: "Période", en: "Wave period" }, unit: "s" },
   ];
 
-  const thresholds = Object.entries(SURCOTE_THRESHOLDS);
+  const isMock = geoData.features?.[0]?.properties?.mock;
 
   return (
-    <div
-      className={`sur-page ${isDark ? "sur-page--dark" : "sur-page--light"}`}
-    >
-      {/* ── Carte ────────────────────────────────────────── */}
-      <div className="sur-page__map">
+    <div className={`sur ${isDark ? "sur--dark" : "sur--light"}`}>
+      {/* ── Carte ─────────────────────────────────────── */}
+      <div className="sur__map">
         <Map
+          ref={mapRef}
           initialViewState={INITIAL_VIEW}
           style={{ width: "100%", height: "100%" }}
           mapStyle={mapStyle}
           mapboxAccessToken={TOKEN}
-          interactiveLayerIds={geoData ? ["surcote-points"] : []}
-          onClick={handleMapClick}
+          interactiveLayerIds={geoData.features.length ? ["sur-points"] : []}
+          onClick={handleClick}
         >
           <NavigationControl position="top-right" visualizePitch />
 
-          {geoData && (
-            <Source id="surcote" type="geojson" data={geoData}>
-              {/* Halo des points extrêmes */}
-              <Layer
-                id="surcote-extreme-halo"
-                type="circle"
-                filter={["==", ["get", "isExtreme"], true]}
-                paint={{
-                  "circle-radius": 16,
-                  "circle-color": DANGER_COLORS.extreme,
-                  "circle-opacity":
-                    0.15 + Math.abs(Math.sin(pulse * 0.06)) * 0.1,
-                  "circle-blur": 1,
-                }}
-              />
+          {/* Couche principale : points de surcote */}
+          <Source id="surcote-data" type="geojson" data={geoData}>
+            {/* Halo points extrêmes */}
+            <Layer
+              id="sur-extreme-halo"
+              type="circle"
+              filter={[
+                ">=",
+                ["get", "surcote_max"],
+                SURCOTE_THRESHOLDS.extreme,
+              ]}
+              paint={{
+                "circle-radius": 22,
+                "circle-color": DANGER_COLORS.extreme,
+                "circle-opacity": 0.18,
+                "circle-blur": 1.2,
+              }}
+            />
 
-              {/* Points principaux */}
-              <Layer
-                id="surcote-points"
-                type="circle"
-                paint={{
-                  "circle-radius": ["get", "pointRadius"],
-                  "circle-color": ["get", "pointColor"],
-                  "circle-opacity": 0.85,
-                  "circle-stroke-width": 1,
-                  "circle-stroke-color": "rgba(255,255,255,0.3)",
-                }}
-              />
-            </Source>
-          )}
+            {/* Points principaux */}
+            <Layer
+              id="sur-points"
+              type="circle"
+              paint={{
+                "circle-radius": radiusExpr,
+                "circle-color": colorExpr,
+                "circle-opacity": 0.88,
+                "circle-stroke-width": 1,
+                "circle-stroke-color": "rgba(255,255,255,0.25)",
+              }}
+            />
+          </Source>
 
           {/* Popup */}
           {popup && (
@@ -236,188 +265,193 @@ export default function SurcotePage() {
                 setPopup(null);
                 dispatch(clearSelectedPoint());
               }}
-              className="sur-popup"
               anchor="bottom"
+              className="sur-popup"
             >
               <div className="sur-popup__inner">
                 <div
-                  className="sur-popup__level"
+                  className="sur-popup__badge"
                   style={{
-                    background: surcoteToColor(popup.surcote_max || 0) + "22",
-                    borderColor: surcoteToColor(popup.surcote_max || 0),
+                    background: getSurcoteColor(popup.surcote_max) + "22",
+                    borderColor: getSurcoteColor(popup.surcote_max),
+                    color: getSurcoteColor(popup.surcote_max),
                   }}
                 >
-                  <span
-                    style={{ color: surcoteToColor(popup.surcote_max || 0) }}
-                  >
-                    {dangerLabels[popup.danger] || "—"}
-                  </span>
+                  {D[popup.danger] || D.low}
                 </div>
-                <div className="sur-popup__grid">
-                  <span>Surcote max</span>
-                  <strong
-                    style={{ color: surcoteToColor(popup.surcote_max || 0) }}
-                  >
-                    {popup.surcote_max != null
-                      ? `${popup.surcote_max.toFixed(2)} m`
-                      : "—"}
-                  </strong>
-                  <span>
-                    {lang === "fr" ? "Vague sig. max" : "Max sig. wave"}
-                  </span>
-                  <strong>
-                    {popup.hauteur_significative_max != null
-                      ? `${popup.hauteur_significative_max.toFixed(1)} m`
-                      : "—"}
-                  </strong>
-                  <span>{lang === "fr" ? "Période max" : "Max period"}</span>
-                  <strong>
-                    {popup.periode_max != null
-                      ? `${popup.periode_max.toFixed(1)} s`
-                      : "—"}
-                  </strong>
-                </div>
+                <table className="sur-popup__table">
+                  <tbody>
+                    <tr>
+                      <td>Surcote max</td>
+                      <td style={{ color: getSurcoteColor(popup.surcote_max) }}>
+                        {popup.surcote_max != null
+                          ? `${Number(popup.surcote_max).toFixed(2)} m`
+                          : "—"}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>{lang === "fr" ? "Vague sig." : "Sig. wave"}</td>
+                      <td>
+                        {popup.hauteur_significative_max != null
+                          ? `${Number(popup.hauteur_significative_max).toFixed(1)} m`
+                          : "—"}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>{lang === "fr" ? "Période" : "Period"}</td>
+                      <td>
+                        {popup.periode_max != null
+                          ? `${Number(popup.periode_max).toFixed(1)} s`
+                          : "—"}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </Popup>
           )}
         </Map>
       </div>
 
-      {/* ── Panel ────────────────────────────────────────── */}
-      <div className="sur-panel">
-        {/* Titre */}
-        <div className="sur-panel__head">
-          <div className="sur-panel__icon">🏖</div>
+      {/* ── Panel ─────────────────────────────────────── */}
+      <div className="sur__panel">
+        {/* Header */}
+        <div className="sur__head">
+          <span className="sur__head-icon">🏖</span>
           <div>
-            <div className="sur-panel__title">
+            <div className="sur__head-title">
               {lang === "fr" ? "Surcote côtière" : "Coastal Storm Surge"}
             </div>
-            <div className="sur-panel__subtitle">
+            <div className="sur__head-sub">
               {lang === "fr"
-                ? "Cyclone centennal · NC · DIMENC–IRD"
-                : "Centennial cyclone · NC · DIMENC–IRD"}
+                ? "Cyclone centennal · DIMENC–IRD · NC"
+                : "Centennial cyclone · DIMENC–IRD · NC"}
             </div>
           </div>
         </div>
 
-        {/* Loading / Error */}
+        {/* Status */}
         {loading && (
-          <div className="sur-panel__loading">
-            <div className="sur-panel__spinner" />
-            <span>{lang === "fr" ? "Chargement…" : "Loading…"}</span>
+          <div className="sur__status">
+            <div className="sur__spinner" />
+            <span>
+              {lang === "fr" ? "Chargement des données…" : "Loading data…"}
+            </span>
           </div>
         )}
-        {error && (
-          <div className="sur-panel__error">
+        {error && !loading && (
+          <div className="sur__error">
             ⚠{" "}
             {lang === "fr"
-              ? "Données mock (API indisponible)"
-              : "Mock data (API unavailable)"}
+              ? "API indisponible — données mock"
+              : "API unavailable — mock data"}
           </div>
+        )}
+        {isMock && !loading && !error && (
+          <div className="sur__mock">⚠ Mock</div>
         )}
 
         {/* KPIs */}
-        <div className="sur-panel__kpis">
-          <div className="sur-panel__kpi">
+        <div className="sur__kpis">
+          <div className="sur__kpi">
             <div
-              className="sur-panel__kpi-val"
+              className="sur__kpi-val"
               style={{ color: DANGER_COLORS.extreme }}
             >
-              {stats.maxSurcote ? `${stats.maxSurcote.toFixed(2)} m` : "—"}
+              {stats?.maxSurcote
+                ? `${Number(stats.maxSurcote).toFixed(2)} m`
+                : "—"}
             </div>
-            <div className="sur-panel__kpi-lbl">
+            <div className="sur__kpi-lbl">
               {lang === "fr" ? "Surcote max" : "Max surge"}
             </div>
           </div>
-          <div className="sur-panel__kpi">
-            <div
-              className="sur-panel__kpi-val"
-              style={{ color: DANGER_COLORS.high }}
-            >
-              {stats.pointsExtremes || 0}
+          <div className="sur__kpi">
+            <div className="sur__kpi-val" style={{ color: DANGER_COLORS.high }}>
+              {stats?.pointsExtremes ?? 0}
             </div>
-            <div className="sur-panel__kpi-lbl">
-              {lang === "fr" ? "Points critiques" : "Critical points"}
+            <div className="sur__kpi-lbl">
+              {lang === "fr" ? "Points critiques" : "Critical pts"}
             </div>
           </div>
-          <div className="sur-panel__kpi">
+          <div className="sur__kpi">
             <div
-              className="sur-panel__kpi-val"
+              className="sur__kpi-val"
               style={{ color: DANGER_COLORS.moderate }}
             >
-              {stats.totalPoints || 0}
+              {stats?.totalPoints ?? 0}
             </div>
-            <div className="sur-panel__kpi-lbl">
-              {lang === "fr" ? "Points côtiers" : "Coastal points"}
+            <div className="sur__kpi-lbl">
+              {lang === "fr" ? "Points côtiers" : "Coastal pts"}
             </div>
           </div>
         </div>
 
-        {/* Mode de visualisation */}
-        <div className="sur-panel__section">
-          <div className="sur-panel__section-title">
+        {/* Variable */}
+        <div className="sur__section">
+          <div className="sur__section-title">
             {lang === "fr" ? "Variable affichée" : "Display variable"}
           </div>
-          <div className="sur-panel__modes">
-            {vizModes.map(({ key, label, unit }) => (
+          <div className="sur__modes">
+            {VIZ_MODES.map((m) => (
               <button
-                key={key}
-                className={`sur-mode ${vizMode === key ? "sur-mode--on" : ""}`}
-                onClick={() => dispatch(setVizMode(key))}
+                key={m.key}
+                className={`sur__mode ${vizMode === m.key ? "sur__mode--on" : ""}`}
+                onClick={() => dispatch(setVizMode(m.key))}
               >
-                <span className="sur-mode__label">{label}</span>
-                <span className="sur-mode__unit">{unit}</span>
+                <span>{m.label[lang]}</span>
+                <span className="sur__mode-unit">{m.unit}</span>
               </button>
             ))}
           </div>
         </div>
 
-        {/* Seuil minimum */}
-        <div className="sur-panel__section">
-          <div className="sur-panel__section-title">
-            {lang === "fr" ? "Seuil minimum" : "Minimum threshold"}
+        {/* Seuil */}
+        <div className="sur__section">
+          <div className="sur__section-title">
+            {lang === "fr" ? "Seuil minimum affiché" : "Minimum threshold"}
           </div>
-          <div className="sur-panel__thresholds">
-            {thresholds.map(([key, val]) => (
+          <div className="sur__thresholds">
+            {Object.entries(SURCOTE_THRESHOLDS).map(([key, val]) => (
               <button
                 key={key}
-                className={`sur-thresh ${threshold === key ? "sur-thresh--on" : ""}`}
+                className={`sur__thresh ${threshold === key ? "sur__thresh--on" : ""}`}
                 style={
                   threshold === key
                     ? {
                         borderColor: DANGER_COLORS[key],
                         color: DANGER_COLORS[key],
-                        background: DANGER_COLORS[key] + "18",
+                        background: DANGER_COLORS[key] + "14",
                       }
                     : {}
                 }
                 onClick={() => dispatch(setDisplayThreshold(key))}
               >
                 <span
-                  className="sur-thresh__dot"
+                  className="sur__thresh-dot"
                   style={{ background: DANGER_COLORS[key] }}
                 />
-                <span className="sur-thresh__label">{dangerLabels[key]}</span>
-                <span className="sur-thresh__val">≥ {val} m</span>
+                <span>{D[key]}</span>
+                <span className="sur__thresh-val">≥ {val} m</span>
               </button>
             ))}
           </div>
         </div>
 
-        {/* Légende couleurs */}
-        <div className="sur-panel__section">
-          <div className="sur-panel__section-title">
-            {lang === "fr" ? "Niveaux de risque" : "Risk levels"}
+        {/* Légende */}
+        <div className="sur__section">
+          <div className="sur__section-title">
+            {lang === "fr" ? "Niveaux de danger" : "Danger levels"}
           </div>
-          <div className="sur-panel__legend">
+          <div className="sur__legend">
             {Object.entries(DANGER_COLORS).map(([key, color]) => (
-              <div key={key} className="sur-legend-row">
+              <div key={key} className="sur__legend-row">
                 <div
-                  className="sur-legend-dot"
-                  style={{ background: color, boxShadow: `0 0 6px ${color}80` }}
+                  className="sur__legend-dot"
+                  style={{ background: color, boxShadow: `0 0 6px ${color}70` }}
                 />
-                <span className="sur-legend-lbl">{dangerLabels[key]}</span>
-                <span className="sur-legend-val" style={{ color }}>
+                <span className="sur__legend-lbl">{D[key]}</span>
+                <span className="sur__legend-val" style={{ color }}>
                   ≥ {SURCOTE_THRESHOLDS[key]} m
                 </span>
               </div>
@@ -425,11 +459,8 @@ export default function SurcotePage() {
           </div>
         </div>
 
-        <div className="sur-panel__credit">
+        <div className="sur__credit">
           DIMENC · IRD · BENEBIG 2024 · data.gouv.nc
-          {features?.features?.[0]?.properties?.mock && (
-            <span className="sur-panel__mock-badge"> · ⚠ Mock</span>
-          )}
         </div>
       </div>
     </div>

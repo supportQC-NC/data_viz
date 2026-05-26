@@ -1,20 +1,19 @@
-.sur-page {
-  position: relative;
+.sur {
+  display: flex;
   width: 100vw;
   height: 100vh;
-  display: flex;
   padding-top: 58px;
   overflow: hidden;
   background: var(--color-bg-primary);
 }
 
-.sur-page__map {
+.sur__map {
   flex: 1;
   height: 100%;
   position: relative;
 }
 
-.sur-panel {
+.sur__panel {
   width: 300px;
   height: 100%;
   background: var(--color-bg-card);
@@ -23,84 +22,86 @@
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  overflow-x: hidden;
   flex-shrink: 0;
-  transition: background 0.3s;
 }
-.sur-panel::-webkit-scrollbar {
-  width: 4px;
+.sur__panel::-webkit-scrollbar {
+  width: 3px;
 }
-.sur-panel::-webkit-scrollbar-track {
-  background: transparent;
-}
-.sur-panel::-webkit-scrollbar-thumb {
+.sur__panel::-webkit-scrollbar-thumb {
   background: var(--color-accent-cyan);
   border-radius: 2px;
+  opacity: 0.4;
 }
 
-.sur-panel__head {
+.sur__head {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 20px 18px 16px;
+  padding: 18px;
   border-bottom: 1px solid var(--color-border);
   flex-shrink: 0;
 }
 
-.sur-panel__icon {
-  font-size: 28px;
-  line-height: 1;
+.sur__head-icon {
+  font-size: 26px;
 }
 
-.sur-panel__title {
+.sur__head-title {
   font-family: var(--font-display);
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: var(--color-text-primary);
-  line-height: 1.2;
 }
 
-.sur-panel__subtitle {
+.sur__head-sub {
   font-family: var(--font-mono);
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   color: var(--color-text-muted);
-  margin-top: 3px;
+  margin-top: 2px;
   letter-spacing: 0.04em;
 }
 
-.sur-panel__loading {
+.sur__status {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 12px 18px;
+  padding: 10px 18px;
   font-size: 0.8rem;
   color: var(--color-text-secondary);
 }
 
-.sur-panel__spinner {
-  width: 16px;
-  height: 16px;
+.sur__spinner {
+  width: 14px;
+  height: 14px;
   border: 2px solid rgba(0, 230, 255, 0.2);
   border-top: 2px solid var(--color-accent-cyan);
   border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+  animation: surSpin 0.8s linear infinite;
   flex-shrink: 0;
 }
 
-@keyframes spin {
+@keyframes surSpin {
   to {
     transform: rotate(360deg);
   }
 }
-.sur-panel__error {
-  padding: 10px 18px;
-  font-size: 0.75rem;
+.sur__error {
+  padding: 8px 18px;
+  font-size: 0.72rem;
   color: var(--color-accent-orange);
   background: rgba(255, 107, 53, 0.08);
   border-bottom: 1px solid var(--color-border);
 }
 
-.sur-panel__kpis {
+.sur__mock {
+  padding: 4px 18px;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--color-accent-orange);
+  opacity: 0.7;
+}
+
+.sur__kpis {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1px;
@@ -109,14 +110,13 @@
   flex-shrink: 0;
 }
 
-.sur-panel__kpi {
+.sur__kpi {
   background: var(--color-bg-primary);
-  padding: 12px 8px;
+  padding: 11px 6px;
   text-align: center;
-  transition: background 0.3s;
 }
 
-.sur-panel__kpi-val {
+.sur__kpi-val {
   font-family: var(--font-mono);
   font-size: 1rem;
   font-weight: 700;
@@ -124,149 +124,140 @@
   margin-bottom: 3px;
 }
 
-.sur-panel__kpi-lbl {
-  font-size: 0.62rem;
+.sur__kpi-lbl {
+  font-size: 0.6rem;
   color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
 
-.sur-panel__section {
-  padding: 14px 18px;
+.sur__section {
+  padding: 13px 16px;
   border-bottom: 1px solid var(--color-border);
 }
 
-.sur-panel__section-title {
+.sur__section-title {
   font-family: var(--font-mono);
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--color-text-muted);
-  margin-bottom: 10px;
+  margin-bottom: 9px;
 }
 
-.sur-panel__modes {
+.sur__modes {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.sur-mode {
+.sur__mode {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 12px;
+  padding: 8px 11px;
   background: var(--color-bg-glass);
   border: 1px solid var(--color-border);
   border-radius: 7px;
   cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
   transition: all 0.2s;
 }
-.sur-mode:hover {
+.sur__mode:hover {
   border-color: var(--color-border-hover);
 }
-.sur-mode--on {
-  background: rgba(0, 230, 255, 0.08);
+.sur__mode--on {
+  background: rgba(0, 230, 255, 0.07);
   border-color: var(--color-accent-cyan);
-}
-
-.sur-mode__label {
-  font-size: 0.82rem;
   font-weight: 600;
-  color: var(--color-text-primary);
 }
 
-.sur-mode__unit {
+.sur__mode-unit {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   color: var(--color-text-muted);
 }
 
-.sur-panel__thresholds {
+.sur__thresholds {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.sur-thresh {
+.sur__thresh {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 7px 12px;
+  padding: 7px 11px;
   background: var(--color-bg-glass);
   border: 1px solid var(--color-border);
   border-radius: 7px;
   cursor: pointer;
+  font-size: 0.8rem;
+  color: var(--color-text-primary);
+  text-align: left;
   transition: all 0.2s;
 }
-.sur-thresh:hover {
+.sur__thresh:hover {
   border-color: var(--color-border-hover);
 }
 
-.sur-thresh__dot {
+.sur__thresh-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
   flex-shrink: 0;
 }
 
-.sur-thresh__label {
-  flex: 1;
-  font-size: 0.8rem;
-  color: var(--color-text-primary);
-  text-align: left;
-}
-
-.sur-thresh__val {
+.sur__thresh-val {
+  margin-left: auto;
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   color: var(--color-text-muted);
 }
 
-.sur-panel__legend {
+.sur__legend {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 6px;
 }
 
-.sur-legend-row {
+.sur__legend-row {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.sur-legend-dot {
+.sur__legend-dot {
   width: 10px;
   height: 10px;
   border-radius: 50%;
   flex-shrink: 0;
 }
 
-.sur-legend-lbl {
+.sur__legend-lbl {
   flex: 1;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   color: var(--color-text-secondary);
 }
 
-.sur-legend-val {
+.sur__legend-val {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 700;
 }
 
-.sur-panel__credit {
+.sur__credit {
   margin-top: auto;
-  padding: 12px 18px;
+  padding: 10px 16px;
   font-family: var(--font-mono);
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   color: var(--color-text-muted);
   letter-spacing: 0.04em;
   border-top: 1px solid var(--color-border);
-}
-
-.sur-panel__mock-badge {
-  color: var(--color-accent-orange);
 }
 
 .sur-popup .mapboxgl-popup-content {
@@ -281,55 +272,57 @@
 }
 .sur-popup .mapboxgl-popup-close-button {
   color: var(--color-text-muted);
-  padding: 6px 8px;
-  font-size: 16px;
+  font-size: 15px;
+  padding: 5px 7px;
 }
 
 .sur-popup__inner {
-  padding: 14px 16px;
-  min-width: 180px;
+  padding: 12px 14px;
+  min-width: 170px;
 }
 
-.sur-popup__level {
+.sur-popup__badge {
   display: inline-flex;
-  align-items: center;
-  padding: 4px 10px;
+  padding: 3px 9px;
   border: 1px solid;
   border-radius: 20px;
-  margin-bottom: 10px;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.07em;
+  margin-bottom: 9px;
 }
 
-.sur-popup__grid {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 3px 12px;
-  font-size: 0.8rem;
+.sur-popup__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
 }
-.sur-popup__grid span {
+.sur-popup__table td {
+  padding: 3px 0;
+}
+.sur-popup__table td:first-child {
   color: var(--color-text-muted);
 }
-.sur-popup__grid strong {
+.sur-popup__table td:last-child {
+  text-align: right;
   color: var(--color-text-primary);
   font-weight: 600;
-  text-align: right;
+  font-family: var(--font-mono);
 }
 
 @media (max-width: 768px) {
-  .sur-page {
+  .sur {
     flex-direction: column;
   }
-  .sur-panel {
+  .sur__panel {
     width: 100%;
     height: 260px;
     border-left: none;
     border-top: 1px solid var(--color-border);
   }
-  .sur-page__map {
+  .sur__map {
     height: calc(100% - 260px);
   }
 }/*# sourceMappingURL=SurcotePage.css.map */
