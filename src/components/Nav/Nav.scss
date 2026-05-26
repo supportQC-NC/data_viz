@@ -1,0 +1,138 @@
+// components/Nav/Nav.scss
+// ============================================================
+// Pacific Dataviz Challenge 2026
+// Navigation — glassmorphism + transitions
+// ============================================================
+
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  height: 60px;
+  background: var(--color-nav-bg);
+  backdrop-filter: var(--blur-glass);
+  -webkit-backdrop-filter: var(--blur-glass);
+  border-bottom: 1px solid var(--color-border);
+  transition:
+    background 0.3s ease,
+    box-shadow 0.3s ease;
+
+  &--scrolled {
+    box-shadow: var(--shadow-card);
+  }
+
+  // ─── Logo ──────────────────────────────────────────────────
+  &__logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: var(--color-text-primary);
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 0.8;
+    }
+
+    &-icon {
+      font-size: 1.3rem;
+    }
+
+    &-text span {
+      color: var(--color-accent-cyan);
+    }
+  }
+
+  // ─── Links ─────────────────────────────────────────────────
+  &__links {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    list-style: none;
+  }
+
+  &__link {
+    display: block;
+    padding: 0.4rem 0.9rem;
+    text-decoration: none;
+    color: var(--color-text-secondary);
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-radius: 6px;
+    transition:
+      color 0.2s,
+      background 0.2s;
+
+    &:hover {
+      color: var(--color-text-primary);
+      background: var(--color-bg-glass);
+    }
+
+    &--active {
+      color: var(--color-accent-cyan);
+      background: rgba(0, 230, 255, 0.08);
+    }
+  }
+
+  // ─── Controls ──────────────────────────────────────────────
+  &__controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__btn {
+    padding: 0.35rem 0.8rem;
+    background: var(--color-bg-glass);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    color: var(--color-text-secondary);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+
+    &:hover {
+      border-color: var(--color-border-hover);
+      color: var(--color-text-primary);
+      background: rgba(0, 230, 255, 0.06);
+    }
+
+    &--lang {
+      letter-spacing: 0.1em;
+      font-weight: 700;
+    }
+  }
+}
+
+// ─── Responsive ─────────────────────────────────────────────
+@media (max-width: 640px) {
+  .nav {
+    padding: 0 1rem;
+
+    &__links {
+      display: none; // menu burger à ajouter en V2
+    }
+
+    &__logo-text {
+      display: none;
+    }
+    &__logo-icon {
+      font-size: 1.5rem;
+    }
+  }
+}
