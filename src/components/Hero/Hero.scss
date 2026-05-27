@@ -1,0 +1,243 @@
+// src/components/Hero/Hero.scss
+@use "../../styles/variables" as *;
+
+.hero {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+// ── Background image ─────────────────────────────────────────
+.hero__bg {
+  position: absolute;
+  inset: 0;
+  background-image: url("../../bg.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
+}
+
+// Overlay — toujours sombre peu importe le thème
+.hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(2, 11, 24, 0.6) 0%,
+    rgba(2, 11, 24, 0.35) 45%,
+    rgba(2, 11, 24, 0.8) 100%
+  );
+  z-index: 1;
+}
+
+// ── Content ──────────────────────────────────────────────────
+.hero__content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: $container-max;
+  margin: 0 auto;
+  padding: calc(#{$nav-height} + #{$space-4xl}) $space-xl $space-5xl;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  @media (max-width: $bp-md) {
+    align-items: center;
+    text-align: center;
+    padding-left: $space-lg;
+    padding-right: $space-lg;
+  }
+}
+
+// Badge
+.hero__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-sm;
+  padding: 6px 16px;
+  background: rgba(0, 230, 255, 0.1);
+  border: 1px solid rgba(0, 230, 255, 0.3);
+  border-radius: $radius-pill;
+  font-family: $font-mono;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #00e6ff;
+  margin-bottom: $space-xl;
+
+  &-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #00e6ff;
+    animation: blink 1.5s ease-in-out infinite;
+  }
+}
+
+// Headline
+.hero__headline {
+  font-family: $font-display;
+  font-weight: 700;
+  font-size: clamp(3.5rem, 9vw, 8rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin-bottom: $space-xl;
+
+  &-line {
+    display: block;
+    color: #ffffff;
+  }
+
+  &-accent {
+    display: block;
+    background: linear-gradient(135deg, #00e6ff, #00ffd5);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  &-danger {
+    display: block;
+    background: linear-gradient(135deg, #ff3b5c, #ff6b35);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+// Subtitle
+.hero__subtitle {
+  font-family: $font-body;
+  font-size: clamp(1rem, 1.8vw, 1.2rem);
+  color: rgba(255, 255, 255, 0.72);
+  max-width: 560px;
+  line-height: 1.8;
+  margin-bottom: $space-2xl;
+}
+
+// CTA
+.hero__cta {
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+  flex-wrap: wrap;
+}
+
+.hero__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-sm;
+  padding: 14px 30px;
+  border-radius: $radius-md;
+  font-family: $font-body;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all $dur-mid $ease-snap;
+
+  &--primary {
+    background: linear-gradient(135deg, #00e6ff, #00ffd5);
+    color: #020b18;
+    font-weight: 700;
+    box-shadow: 0 4px 24px rgba(0, 230, 255, 0.35);
+
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 40px rgba(0, 230, 255, 0.5);
+      color: #020b18;
+    }
+  }
+
+  &--ghost {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.85);
+    border-color: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(8px);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.45);
+      color: #ffffff;
+      transform: translateY(-3px);
+    }
+  }
+}
+
+// Scroll indicator
+.hero__scroll {
+  position: absolute;
+  bottom: $space-2xl;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-sm;
+
+  &-label {
+    font-family: $font-mono;
+    font-size: 0.62rem;
+    color: rgba(255, 255, 255, 0.35);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  &-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+
+    span {
+      display: block;
+      width: 10px;
+      height: 10px;
+      border-right: 2px solid rgba(255, 255, 255, 0.3);
+      border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+      transform: rotate(45deg);
+      animation: scroll-arrow 1.5s ease-in-out infinite;
+
+      &:nth-child(2) {
+        animation-delay: 0.2s;
+        opacity: 0.6;
+      }
+      &:nth-child(3) {
+        animation-delay: 0.4s;
+        opacity: 0.3;
+      }
+    }
+  }
+}
+
+@keyframes scroll-arrow {
+  0%,
+  100% {
+    opacity: 0.8;
+    transform: rotate(45deg) translateY(0);
+  }
+  50% {
+    opacity: 0.2;
+    transform: rotate(45deg) translateY(4px);
+  }
+}
+
+// Fondu bas
+.hero__fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 140px;
+  background: linear-gradient(180deg, transparent, #020b18);
+  z-index: 2;
+  pointer-events: none;
+}

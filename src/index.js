@@ -1,9 +1,8 @@
-// index.js
+// src/index.js
 // ============================================================
 // Pacific Dataviz Challenge 2026
 // Point d'entrée — Redux + Router
 // ============================================================
-
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';

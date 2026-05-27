@@ -1,236 +1,84 @@
-// store/slices/cyclonesSlice.js
-// ============================================================
-// Pacific Dataviz Challenge 2026
-// Cyclones Slice — trajectoires historiques Pacifique SW
-// Source : data.gouv.nc / Géorep Météo-France SPEArTC 1977→
-// ============================================================
-
+// src/store/slices/cyclonesSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { fetchCyclonesSegments, fetchCyclonesPoints, fetchCyclonesRef } from '../../services/api';
 
-// ─── Thunks ──────────────────────────────────────────────────
+// URLs GeoJSON export ArcGIS OpenData — accessibles depuis le navigateur
+const POSITIONS_GEOJSON    = 'https://georep-dtsi-sgt.opendata.arcgis.com/datasets/63e27e6671324498838e4944035a3cc0_0.geojson';
+const TRAJECTOIRES_GEOJSON = 'https://georep-dtsi-sgt.opendata.arcgis.com/datasets/63e27e6671324498838e4944035a3cc0_1.geojson';
 
-// Charge les trajectoires (lignes) des cyclones zone NC
-export const loadCyclonesSegments = createAsyncThunk(
-  'cyclones/loadSegments',
+// ── Thunks ───────────────────────────────────────────────────
+export const fetchPositions = createAsyncThunk(
+  'cyclones/fetchPositions',
   async (_, { rejectWithValue }) => {
     try {
-      return await fetchCyclonesSegments();
+      const res = await fetch(POSITIONS_GEOJSON);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      console.log('[POSITIONS] features count:', data.features?.length);
+      console.log('[POSITIONS] premier feature properties:', data.features?.[0]?.properties);
+      return data;
     } catch (err) {
       return rejectWithValue(err.message);
     }
   }
 );
 
-// Charge les positions horaires (points) avec vent/pression
-export const loadCyclonesPoints = createAsyncThunk(
-  'cyclones/loadPoints',
+export const fetchTrajectoires = createAsyncThunk(
+  'cyclones/fetchTrajectoires',
   async (_, { rejectWithValue }) => {
     try {
-      return await fetchCyclonesPoints();
+      const res = await fetch(TRAJECTOIRES_GEOJSON);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      console.log('[TRAJECTOIRES] features count:', data.features?.length);
+      console.log('[TRAJECTOIRES] premier feature properties:', data.features?.[0]?.properties);
+      return data;
     } catch (err) {
       return rejectWithValue(err.message);
     }
   }
 );
 
-// Charge le référentiel (métadonnées par cyclone : nom, saison, catégorie max)
-export const loadCyclonesRef = createAsyncThunk(
-  'cyclones/loadRef',
-  async (_, { rejectWithValue }) => {
-    try {
-      return await fetchCyclonesRef();
-    } catch (err) {
-      return rejectWithValue(err.message);
-    }
-  }
-);
-
-// ─── État initial ─────────────────────────────────────────────
-
-const initialState = {
-  // Données GeoJSON brutes
-  segments:    null,   // FeatureCollection — trajectoires
-  points:      null,   // FeatureCollection — positions horodatées
-  referentiel: null,   // Array — métadonnées cyclones
-
-  // États de chargement
-  loadingSegments:    false,
-  loadingPoints:      false,
-  loadingRef:         false,
-  errorSegments:      null,
-  errorPoints:        null,
-  errorRef:           null,
-
-  // Filtres actifs
-  filters: {
-    saison:       null,    // ex: '2002-2003' | null = toutes
-    categorie:    null,    // 'TD' | 'TS' | 'TC' | 'STC' | 'ITC' | null
-    ensoPhase:    null,    // 'El Nino' | 'La Nina' | 'Neutral' | null
-    selectedName: null,    // nom du cyclone sélectionné pour focus
-  },
-
-  // Cyclone actuellement survolé/sélectionné sur la carte
-  hoveredCyclone:   null,
-  selectedCyclone:  null,
-
-  // Statistiques calculées (enrichi après chargement)
-  stats: {
-    total:       0,
-    byCategory:  {},
-    byDecade:    {},
-    mostIntense: null,
-  },
-};
-
-// ─── Slice ───────────────────────────────────────────────────
-
+// ── Slice ─────────────────────────────────────────────────────
 const cyclonesSlice = createSlice({
   name: 'cyclones',
-  initialState,
-  reducers: {
-    // Filtres
-    setFilterSaison(state, action) {
-      state.filters.saison = action.payload;
+  initialState: {
+    positions: {
+      features : [],
+      status   : 'idle',
+      error    : null,
     },
-    setFilterCategorie(state, action) {
-      state.filters.categorie = action.payload;
-    },
-    setFilterEnso(state, action) {
-      state.filters.ensoPhase = action.payload;
-    },
-    setFilterName(state, action) {
-      state.filters.selectedName = action.payload;
-    },
-    resetFilters(state) {
-      state.filters = initialState.filters;
-    },
-
-    // Interaction carte
-    setHoveredCyclone(state, action) {
-      state.hoveredCyclone = action.payload;
-    },
-    setSelectedCyclone(state, action) {
-      state.selectedCyclone = action.payload;
-    },
-    clearSelection(state) {
-      state.hoveredCyclone  = null;
-      state.selectedCyclone = null;
-    },
-
-    // Stats (calculées en dehors et injectées)
-    setStats(state, action) {
-      state.stats = action.payload;
-    },
-
-    // Injection directe des données (pour les tests ou données mock)
-    setData(state, action) {
-      const { segments, points, referentiel } = action.payload;
-      if (segments)    state.segments    = segments;
-      if (points)      state.points      = points;
-      if (referentiel) state.referentiel = referentiel;
+    trajectoires: {
+      features : [],
+      status   : 'idle',
+      error    : null,
     },
   },
-
+  reducers: {},
   extraReducers: (builder) => {
-    // Segments
     builder
-      .addCase(loadCyclonesSegments.pending, (state) => {
-        state.loadingSegments = true;
-        state.errorSegments   = null;
+      .addCase(fetchPositions.pending,   (state) => { state.positions.status = 'loading'; })
+      .addCase(fetchPositions.fulfilled, (state, { payload }) => {
+        state.positions.status   = 'succeeded';
+        state.positions.features = payload.features ?? [];
       })
-      .addCase(loadCyclonesSegments.fulfilled, (state, action) => {
-        state.loadingSegments = false;
-        state.segments        = action.payload;
+      .addCase(fetchPositions.rejected,  (state, { payload }) => {
+        state.positions.status = 'failed';
+        state.positions.error  = payload;
       })
-      .addCase(loadCyclonesSegments.rejected, (state, action) => {
-        state.loadingSegments = false;
-        state.errorSegments   = action.payload;
-      });
 
-    // Points
-    builder
-      .addCase(loadCyclonesPoints.pending, (state) => {
-        state.loadingPoints = true;
-        state.errorPoints   = null;
+      .addCase(fetchTrajectoires.pending,   (state) => { state.trajectoires.status = 'loading'; })
+      .addCase(fetchTrajectoires.fulfilled, (state, { payload }) => {
+        state.trajectoires.status   = 'succeeded';
+        state.trajectoires.features = payload.features ?? [];
       })
-      .addCase(loadCyclonesPoints.fulfilled, (state, action) => {
-        state.loadingPoints = false;
-        state.points        = action.payload;
-      })
-      .addCase(loadCyclonesPoints.rejected, (state, action) => {
-        state.loadingPoints = false;
-        state.errorPoints   = action.payload;
-      });
-
-    // Référentiel
-    builder
-      .addCase(loadCyclonesRef.pending, (state) => {
-        state.loadingRef = true;
-        state.errorRef   = null;
-      })
-      .addCase(loadCyclonesRef.fulfilled, (state, action) => {
-        state.loadingRef = false;
-        state.referentiel = action.payload;
-      })
-      .addCase(loadCyclonesRef.rejected, (state, action) => {
-        state.loadingRef = false;
-        state.errorRef   = action.payload;
+      .addCase(fetchTrajectoires.rejected,  (state, { payload }) => {
+        state.trajectoires.status = 'failed';
+        state.trajectoires.error  = payload;
       });
   },
 });
 
-export const {
-  setFilterSaison,
-  setFilterCategorie,
-  setFilterEnso,
-  setFilterName,
-  resetFilters,
-  setHoveredCyclone,
-  setSelectedCyclone,
-  clearSelection,
-  setStats,
-  setData,
-} = cyclonesSlice.actions;
-
-// ─── Selectors ───────────────────────────────────────────────
-
-export const selectCyclonesSegments    = (state) => state.cyclones.segments;
-export const selectCyclonesPoints      = (state) => state.cyclones.points;
-export const selectCyclonesRef         = (state) => state.cyclones.referentiel;
-export const selectCyclonesLoading     = (state) =>
-  state.cyclones.loadingSegments || state.cyclones.loadingPoints;
-export const selectCyclonesError       = (state) =>
-  state.cyclones.errorSegments || state.cyclones.errorPoints;
-export const selectCyclonesFilters     = (state) => state.cyclones.filters;
-export const selectHoveredCyclone      = (state) => state.cyclones.hoveredCyclone;
-export const selectSelectedCyclone     = (state) => state.cyclones.selectedCyclone;
-export const selectCyclonesStats       = (state) => state.cyclones.stats;
-
-// Selector filtré — renvoie les segments après application des filtres
-export const selectFilteredSegments = (state) => {
-  const { segments, filters } = state.cyclones;
-  if (!segments || !segments.features) return null;
-
-  let features = segments.features;
-
-  if (filters.categorie) {
-    features = features.filter(
-      (f) => f.properties?.categorie === filters.categorie
-    );
-  }
-  if (filters.saison) {
-    features = features.filter(
-      (f) => f.properties?.saison === filters.saison
-    );
-  }
-  if (filters.selectedName) {
-    features = features.filter(
-      (f) => f.properties?.nom?.toLowerCase() === filters.selectedName.toLowerCase()
-    );
-  }
-
-  return { ...segments, features };
-};
+export const selectPositions    = (state) => state.cyclones.positions;
+export const selectTrajectoires = (state) => state.cyclones.trajectoires;
 
 export default cyclonesSlice.reducer;

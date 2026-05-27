@@ -1,65 +1,52 @@
 // src/store/slices/uiSlice.js
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = {
-  theme:       'dark',   // 'dark' | 'light'
-  lang:        'fr',     // 'fr'  | 'en'
-  mapMode:     'both',   // 'cyclones' | 'surcote' | 'both'
-  sidebarOpen: false,
-  activePopup: null,
+const getInitialTheme = () => {
+  try {
+    const stored = localStorage.getItem('pdvc_theme');
+    if (stored) return stored;
+  } catch {}
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+};
+
+const getInitialLang = () => {
+  try {
+    const stored = localStorage.getItem('pdvc_lang');
+    if (stored) return stored;
+  } catch {}
+  return navigator.language?.startsWith('fr') ? 'fr' : 'en';
 };
 
 const uiSlice = createSlice({
   name: 'ui',
-  initialState,
+  initialState: {
+    theme:   getInitialTheme(),
+    lang:    getInitialLang(),
+    navOpen: false,
+  },
   reducers: {
     toggleTheme(state) {
-      state.theme = state.theme === 'dark' ? 'light' : 'dark';
-    },
-    setTheme(state, action) {
-      state.theme = action.payload;
-    },
-    toggleLang(state) {
-      state.lang = state.lang === 'fr' ? 'en' : 'fr';
+      const next = state.theme === 'dark' ? 'light' : 'dark';
+      state.theme = next;
+      try { localStorage.setItem('pdvc_theme', next); } catch {}
     },
     setLang(state, action) {
       state.lang = action.payload;
+      try { localStorage.setItem('pdvc_lang', action.payload); } catch {}
     },
-    setMapMode(state, action) {
-      state.mapMode = action.payload;
+    toggleNav(state) {
+      state.navOpen = !state.navOpen;
     },
-    toggleSidebar(state) {
-      state.sidebarOpen = !state.sidebarOpen;
-    },
-    setSidebarOpen(state, action) {
-      state.sidebarOpen = action.payload;
-    },
-    setActivePopup(state, action) {
-      state.activePopup = action.payload;
-    },
-    closePopup(state) {
-      state.activePopup = null;
+    closeNav(state) {
+      state.navOpen = false;
     },
   },
 });
 
-export const {
-  toggleTheme,
-  setTheme,
-  toggleLang,
-  setLang,
-  setMapMode,
-  toggleSidebar,
-  setSidebarOpen,
-  setActivePopup,
-  closePopup,
-} = uiSlice.actions;
+export const { toggleTheme, setLang, toggleNav, closeNav } = uiSlice.actions;
 
-// Selectors
-export const selectTheme       = (state) => state.ui.theme;
-export const selectLang        = (state) => state.ui.lang;
-export const selectMapMode     = (state) => state.ui.mapMode;
-export const selectSidebarOpen = (state) => state.ui.sidebarOpen;
-export const selectActivePopup = (state) => state.ui.activePopup;
+export const selectTheme   = (state) => state.ui.theme;
+export const selectLang    = (state) => state.ui.lang;
+export const selectNavOpen = (state) => state.ui.navOpen;
 
 export default uiSlice.reducer;

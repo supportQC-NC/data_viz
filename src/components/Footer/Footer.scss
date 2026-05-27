@@ -1,0 +1,218 @@
+// src/components/Footer/Footer.scss
+@use "../../styles/variables" as *;
+
+.footer {
+  background: var(--grad-footer);
+  border-top: 1px solid var(--border-subtle);
+  padding: $space-4xl 0 $space-xl;
+  position: relative;
+  overflow: hidden;
+}
+
+.footer__inner {
+  max-width: $container-max;
+  margin: 0 auto;
+  padding: 0 $space-xl;
+
+  @media (max-width: $bp-md) {
+    padding: 0 $space-lg;
+  }
+}
+
+.footer__grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: $space-3xl;
+  padding-bottom: $space-3xl;
+  border-bottom: 1px solid var(--border-subtle);
+
+  @media (max-width: $bp-lg) {
+    grid-template-columns: 1fr 1fr;
+    gap: $space-2xl;
+  }
+  @media (max-width: $bp-sm) {
+    grid-template-columns: 1fr;
+    gap: $space-xl;
+  }
+}
+
+// ── Brand ────────────────────────────────────────────────────
+.footer__brand {
+  display: flex;
+  flex-direction: column;
+  gap: $space-lg;
+}
+
+.footer__logo {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  text-decoration: none;
+
+  &-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: $radius-lg;
+    background: var(--grad-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    box-shadow: var(--glow-cyan);
+    animation: footer-pulse 3s ease-in-out infinite;
+  }
+
+  &-title {
+    font-family: $font-display;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    display: block;
+  }
+
+  &-sub {
+    font-family: $font-mono;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    display: block;
+  }
+}
+
+.footer__tagline {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  max-width: 300px;
+}
+
+.footer__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-sm;
+  padding: 6px 14px;
+  border: 1px solid var(--border-mid);
+  border-radius: $radius-pill;
+  font-family: $font-mono;
+  font-size: 0.68rem;
+  color: var(--accent-primary);
+  letter-spacing: 0.06em;
+  width: fit-content;
+
+  &-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent-primary);
+    animation: footer-blink 2s ease-in-out infinite;
+  }
+}
+
+// ── Columns ──────────────────────────────────────────────────
+.footer__col {
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.footer__col-title {
+  font-family: $font-display;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.footer__links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+
+  a {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition:
+      color $dur-fast $ease-ocean,
+      padding-left $dur-fast $ease-ocean;
+    padding-left: 0;
+
+    &:hover {
+      color: var(--accent-primary);
+      padding-left: 4px;
+    }
+  }
+}
+
+.footer__datasets {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+
+  li {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+    padding-left: $space-md;
+    position: relative;
+
+    &::before {
+      content: "◦";
+      position: absolute;
+      left: 0;
+      color: var(--accent-primary);
+    }
+  }
+}
+
+// ── Bottom ───────────────────────────────────────────────────
+.footer__bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: $space-xl;
+  gap: $space-md;
+  flex-wrap: wrap;
+
+  @media (max-width: $bp-md) {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+.footer__legal {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  max-width: 500px;
+  line-height: 1.5;
+}
+
+.footer__rights {
+  font-family: $font-mono;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+@keyframes footer-pulse {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes footer-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}

@@ -1,427 +1,308 @@
 // src/pages/AboutPage/AboutPage.jsx
-// ============================================================
-// Pacific Dataviz Challenge 2026
-// À propos — Technologies + Présentation équipe
-// ============================================================
-
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import { useTheme } from "../../store/context/themeContext";
+import React, { useState } from "react";
 import { useLang } from "../../store/context/langContext";
 import "./AboutPage.scss";
 
-// ── Stack technologique ──────────────────────────────────────
-const TECH_STACK = [
-  {
-    category: { fr: "Frontend", en: "Frontend" },
-    items: [
-      {
-        name: "React 19",
-        desc: { fr: "UI composants + hooks", en: "Component UI + hooks" },
-        icon: "⚛",
-        color: "#61DAFB",
-      },
-      {
-        name: "Redux Toolkit",
-        desc: {
-          fr: "State management centralisé",
-          en: "Centralised state management",
-        },
-        icon: "🔄",
-        color: "#764ABC",
-      },
-      {
-        name: "React Router v7",
-        desc: {
-          fr: "Navigation SPA multi-pages",
-          en: "Multi-page SPA navigation",
-        },
-        icon: "🧭",
-        color: "#CA4245",
-      },
-      {
-        name: "Sass / SCSS",
-        desc: {
-          fr: "Styles modulaires + variables",
-          en: "Modular styles + variables",
-        },
-        icon: "🎨",
-        color: "#CC6699",
-      },
-    ],
-  },
-  {
-    category: { fr: "Cartographie", en: "Mapping" },
-    items: [
-      {
-        name: "Mapbox GL JS 3",
-        desc: {
-          fr: "Rendu WebGL GPU haute perf.",
-          en: "High-perf GPU WebGL rendering",
-        },
-        icon: "🗺",
-        color: "#00C4B4",
-      },
-      {
-        name: "react-map-gl 8",
-        desc: {
-          fr: "Wrapper React pour Mapbox",
-          en: "React wrapper for Mapbox",
-        },
-        icon: "📍",
-        color: "#00A896",
-      },
-      {
-        name: "GeoJSON + Turf.js",
-        desc: {
-          fr: "Géométries & analyses spatiales",
-          en: "Geometries & spatial analysis",
-        },
-        icon: "📐",
-        color: "#4CAF50",
-      },
-    ],
-  },
-  {
-    category: { fr: "Données & Viz", en: "Data & Viz" },
-    items: [
-      {
-        name: "Recharts",
-        desc: {
-          fr: "Graphiques SVG déclaratifs",
-          en: "Declarative SVG charts",
-        },
-        icon: "📊",
-        color: "#8884D8",
-      },
-      {
-        name: "Canvas API",
-        desc: {
-          fr: "Animations temps réel (ocean)",
-          en: "Real-time animations (ocean)",
-        },
-        icon: "🌊",
-        color: "#00E5FF",
-      },
-      {
-        name: "WebGL / Shaders",
-        desc: { fr: "Effets visuels GPU", en: "GPU visual effects" },
-        icon: "✨",
-        color: "#FFD740",
-      },
-    ],
-  },
-  {
-    category: { fr: "Sources de données", en: "Data sources" },
-    items: [
-      {
-        name: "data.gouv.nc",
-        desc: {
-          fr: "Open data Nouvelle-Calédonie",
-          en: "New Caledonia open data",
-        },
-        icon: "🏛",
-        color: "#0066CC",
-      },
-      {
-        name: "NOAA CO-OPS",
-        desc: {
-          fr: "Mesures marégraphiques live",
-          en: "Live tide gauge readings",
-        },
-        icon: "📡",
-        color: "#1976D2",
-      },
-      {
-        name: "GIEC / IPCC AR6",
-        desc: {
-          fr: "Scénarios montée des eaux",
-          en: "Sea level rise scenarios",
-        },
-        icon: "🌡",
-        color: "#FF6B35",
-      },
-      {
-        name: "Météo-France / SPEArTC",
-        desc: { fr: "Données cyclones Pac. SW", en: "SW Pacific cyclone data" },
-        icon: "🌀",
-        color: "#EF5350",
-      },
-    ],
-  },
+const SKILLS = [
+  { name: "HTML", pct: 95, cat: "web" },
+  { name: "CSS / SASS", pct: 85, cat: "web" },
+  { name: "JavaScript", pct: 50, cat: "web" },
+  { name: "React", pct: 60, cat: "web" },
+  { name: "Next.js", pct: 70, cat: "web" },
+  { name: "TypeScript", pct: 55, cat: "web" },
+  { name: "Redux", pct: 35, cat: "web" },
+  { name: "Power BI", pct: 90, cat: "data" },
+  { name: "DAX", pct: 45, cat: "data" },
+  { name: "Excel", pct: 60, cat: "data" },
+  { name: "Photoshop", pct: 85, cat: "design" },
+  { name: "Illustrator", pct: 75, cat: "design" },
+  { name: "Premiere Pro", pct: 95, cat: "design" },
+  { name: "InDesign", pct: 75, cat: "design" },
 ];
 
-// ── Données du projet ────────────────────────────────────────
-const PROJECT_STATS = [
-  {
-    v: "2",
-    l: { fr: "jeux de données réels", en: "real datasets" },
-    c: "#00E5FF",
-  },
-  {
-    v: "3",
-    l: { fr: "pages cartes interactives", en: "interactive map pages" },
-    c: "#69F0AE",
-  },
-  {
-    v: "100%",
-    l: { fr: "open data officiel", en: "official open data" },
-    c: "#FF9100",
-  },
+const CAT_COLORS = { web: "#00e6ff", data: "#ffd166", design: "#ff9f43" };
+
+const STACK = [
+  "React",
+  "Redux",
+  "Mapbox GL",
+  "Recharts",
+  "SCSS",
+  "Canvas API",
+  "GeoJSON",
+  "ArcGIS OpenData",
 ];
+
+const SkillBar = ({ name, pct, color }) => (
+  <div className="about-skill">
+    <div className="about-skill__header">
+      <span className="about-skill__name">{name}</span>
+      <span className="about-skill__pct" style={{ color }}>
+        {pct}%
+      </span>
+    </div>
+    <div className="about-skill__track">
+      <div
+        className="about-skill__fill"
+        style={{ width: `${pct}%`, background: color }}
+      />
+    </div>
+  </div>
+);
 
 export default function AboutPage() {
-  const navigate = useNavigate();
-  const { isDark } = useTheme();
-  const { lang, t } = useLang();
+  const { t } = useLang();
+  const [activeSkillCat, setActiveSkillCat] = useState("all");
+
+  const filteredSkills =
+    activeSkillCat === "all"
+      ? SKILLS
+      : SKILLS.filter((s) => s.cat === activeSkillCat);
+
+  const EXPERIENCES = [
+    {
+      period: t("about.xp1_period"),
+      company: t("about.xp1_company"),
+      role: t("about.xp1_role"),
+      desc: t("about.xp1_desc"),
+    },
+    {
+      period: t("about.xp2_period"),
+      company: t("about.xp2_company"),
+      role: t("about.xp2_role"),
+      desc: t("about.xp2_desc"),
+    },
+    {
+      period: t("about.xp3_period"),
+      company: t("about.xp3_company"),
+      role: t("about.xp3_role"),
+      desc: t("about.xp3_desc"),
+    },
+    {
+      period: t("about.xp4_period"),
+      company: t("about.xp4_company"),
+      role: t("about.xp4_role"),
+      desc: t("about.xp4_desc"),
+    },
+    {
+      period: t("about.xp5_period"),
+      company: t("about.xp5_company"),
+      role: t("about.xp5_role"),
+      desc: t("about.xp5_desc"),
+    },
+    {
+      period: t("about.xp6_period"),
+      company: t("about.xp6_company"),
+      role: t("about.xp6_role"),
+      desc: t("about.xp6_desc"),
+    },
+    {
+      period: t("about.xp7_period"),
+      company: t("about.xp7_company"),
+      role: t("about.xp7_role"),
+      desc: t("about.xp7_desc"),
+    },
+  ];
+
+  const INTERESTS = [
+    { icon: "💻", label: t("about.interest1") },
+    { icon: "🎨", label: t("about.interest2") },
+    { icon: "🌿", label: t("about.interest3") },
+    { icon: "🎬", label: t("about.interest4") },
+    { icon: "🍳", label: t("about.interest5") },
+    { icon: "🎧", label: t("about.interest6") },
+  ];
+
+  const CAT_LABELS = {
+    web: t("about.filter_web"),
+    data: t("about.filter_data"),
+    design: t("about.filter_design"),
+  };
 
   return (
-    <div className={`about ${isDark ? "about--dark" : "about--light"}`}>
-      {/* ── Hero ─────────────────────────────────────── */}
-      <section className="about__hero">
-        <div className="about__hero-inner">
-          <div className="about__hero-tag">
-            🏆 Pacific Dataviz Challenge 2026
+    <div className="about-page">
+      <div className="about-page__inner">
+        {/* ── Hero ── */}
+        <div className="about-hero">
+          <div className="about-hero__avatar">
+            <div className="about-hero__avatar-ring" />
+            <div className="about-hero__avatar-inner">SV</div>
           </div>
-          <h1 className="about__hero-title">
-            {lang === "fr" ? "À propos du projet" : "About the project"}
-          </h1>
-          <p className="about__hero-subtitle">
-            {lang === "fr"
-              ? "Une dataviz climatique immersive sur la montée des eaux et les cyclones du Pacifique. Données officielles data.gouv.nc · Météo-France · NOAA · GIEC."
-              : "An immersive climate dataviz on sea level rise and Pacific cyclones. Official data: data.gouv.nc · Météo-France · NOAA · IPCC."}
-          </p>
-          <div className="about__hero-stats">
-            {PROJECT_STATS.map((s) => (
-              <div key={s.v} className="about__hero-stat">
-                <div className="about__hero-stat-val" style={{ color: s.c }}>
-                  {s.v}
-                </div>
-                <div className="about__hero-stat-lbl">{s.l[lang]}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Présentation ─────────────────────────────── */}
-      <section className="about__section">
-        <div className="about__section-inner">
-          <div className="about__section-tag">
-            {lang === "fr" ? "👤 Présentation" : "👤 Presentation"}
-          </div>
-          <h2 className="about__section-title">
-            {lang === "fr" ? "Qui sommes-nous ?" : "Who are we?"}
-          </h2>
-
-          {/* ▼▼▼ ZONE À COMPLÉTER — texte de présentation ▼▼▼ */}
-          <div className="about__bio-placeholder">
-            <div className="about__bio-avatar">🌊</div>
-            <div className="about__bio-content">
-              <div className="about__bio-name">
-                {lang === "fr" ? "[Votre nom / équipe]" : "[Your name / team]"}
-              </div>
-              <div className="about__bio-role">
-                {lang === "fr"
-                  ? "[Votre rôle — ex: Développeur fullstack & Data visualizer, Nouvelle-Calédonie]"
-                  : "[Your role — e.g.: Fullstack developer & Data visualizer, New Caledonia]"}
-              </div>
-              <p className="about__bio-text">
-                {lang === "fr"
-                  ? "[ Texte de présentation à compléter — parlez de votre parcours, votre lien avec le Pacifique, votre motivation pour ce concours… ]"
-                  : "[ Presentation text to complete — talk about your background, your connection to the Pacific, your motivation for this challenge… ]"}
-              </p>
+          <div className="about-hero__content">
+            <span className="about-hero__label">{t("about.label")}</span>
+            <h1 className="about-hero__name">{t("about.name")}</h1>
+            <p className="about-hero__role">{t("about.role")}</p>
+            <p className="about-hero__location">{t("about.location")}</p>
+            <p className="about-hero__bio">{t("about.bio")}</p>
+            <div className="about-hero__links">
+              <a
+                href="https://github.com/Krysto-nc-dev"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="about-link about-link--github"
+              >
+                ⌥ {t("about.github")}
+              </a>
+              <a
+                href="mailto:contact@krysto.nc"
+                className="about-link about-link--mail"
+              >
+                ✉ contact@krysto.nc
+              </a>
+              <a href="tel:+687939253" className="about-link about-link--phone">
+                📞 +687 93.92.53
+              </a>
             </div>
           </div>
-          {/* ▲▲▲ FIN ZONE À COMPLÉTER ▲▲▲ */}
         </div>
-      </section>
 
-      {/* ── Mission ──────────────────────────────────── */}
-      <section className="about__section about__section--alt">
-        <div className="about__section-inner">
-          <div className="about__section-tag">
-            🎯 {lang === "fr" ? "Mission" : "Mission"}
-          </div>
-          <h2 className="about__section-title">
-            {lang === "fr" ? "Pourquoi ce projet ?" : "Why this project?"}
-          </h2>
-          <div className="about__mission-grid">
-            {[
-              {
-                icon: "🌊",
-                title: {
-                  fr: "Rendre visible l'invisible",
-                  en: "Make the invisible visible",
-                },
-                desc: {
-                  fr: "Les données climatiques existent. Elles sont complexes, abstraites, ignorées. Notre mission : les transformer en une expérience qui touche, qui choque, qui mobilise.",
-                  en: "Climate data exists. It is complex, abstract, ignored. Our mission: transform it into an experience that moves, shocks, and mobilises.",
-                },
-              },
-              {
-                icon: "🗺",
-                title: {
-                  fr: "Ancrer dans le territoire",
-                  en: "Root it in the territory",
-                },
-                desc: {
-                  fr: "La Nouvelle-Calédonie, les îles du Pacifique — ce ne sont pas des statistiques. Ce sont des communautés, des cultures, des terres qui disparaissent.",
-                  en: "New Caledonia, Pacific islands — these are not statistics. These are communities, cultures, lands disappearing.",
-                },
-              },
-              {
-                icon: "📊",
-                title: {
-                  fr: "Données officielles seulement",
-                  en: "Official data only",
-                },
-                desc: {
-                  fr: "data.gouv.nc · Météo-France · NOAA · GIEC AR6. Chaque chiffre est sourcé, chaque visualisation est documentée.",
-                  en: "data.gouv.nc · Météo-France · NOAA · IPCC AR6. Every figure is sourced, every visualisation is documented.",
-                },
-              },
-            ].map((m) => (
-              <div key={m.icon} className="about__mission-card">
-                <div className="about__mission-icon">{m.icon}</div>
-                <h3 className="about__mission-title">{m.title[lang]}</h3>
-                <p className="about__mission-desc">{m.desc[lang]}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Stack technique ──────────────────────────── */}
-      <section className="about__section">
-        <div className="about__section-inner">
-          <div className="about__section-tag">
-            ⚙ {lang === "fr" ? "Stack technique" : "Tech stack"}
-          </div>
-          <h2 className="about__section-title">
-            {lang === "fr" ? "Technologies utilisées" : "Technologies used"}
-          </h2>
-
-          <div className="about__tech-categories">
-            {TECH_STACK.map((cat) => (
-              <div key={cat.category.fr} className="about__tech-cat">
-                <div className="about__tech-cat-title">
-                  {cat.category[lang]}
-                </div>
-                <div className="about__tech-grid">
-                  {cat.items.map((item) => (
-                    <div key={item.name} className="about__tech-card">
-                      <div
-                        className="about__tech-icon"
-                        style={{
-                          background: `${item.color}18`,
-                          color: item.color,
-                        }}
-                      >
-                        {item.icon}
-                      </div>
-                      <div className="about__tech-info">
-                        <div
-                          className="about__tech-name"
-                          style={{ color: item.color }}
-                        >
-                          {item.name}
-                        </div>
-                        <div className="about__tech-desc">
-                          {item.desc[lang]}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Concours ─────────────────────────────────── */}
-      <section className="about__section about__section--alt">
-        <div className="about__section-inner about__contest">
-          <div className="about__contest-left">
-            <div className="about__section-tag">
-              🏆 {lang === "fr" ? "Concours" : "Competition"}
-            </div>
-            <h2 className="about__section-title">
-              Pacific Dataviz Challenge 2026
-            </h2>
-            <p className="about__contest-text">
-              {lang === "fr"
-                ? "Organisé par la Communauté du Pacifique (SPC). Ouvert du 1er juin au 31 août 2026. Catégorie : Dataviz interactive. Données : open data officielles du Pacifique."
-                : "Organised by the Pacific Community (SPC). Open from 1 June to 31 August 2026. Category: Interactive Dataviz. Data: official Pacific open data."}
-            </p>
-            <div className="about__contest-badges">
-              {[
-                "SPC",
-                "DIMENC",
-                "Météo-France",
-                "data.gouv.nc",
-                "NOAA",
-                "GIEC",
-              ].map((b) => (
-                <span key={b} className="about__contest-badge">
-                  {b}
-                </span>
+        {/* ── Compétences ── */}
+        <div className="about-section">
+          <div className="about-section__header">
+            <h2 className="about-section__title">{t("about.skills_title")}</h2>
+            <div className="about-skill-filters">
+              <button
+                className={`about-skill-filter${activeSkillCat === "all" ? " active" : ""}`}
+                onClick={() => setActiveSkillCat("all")}
+              >
+                {t("about.filter_all")}
+              </button>
+              {Object.entries(CAT_LABELS).map(([key, label]) => (
+                <button
+                  key={key}
+                  className={`about-skill-filter${activeSkillCat === key ? " active" : ""}`}
+                  style={
+                    activeSkillCat === key
+                      ? { borderColor: CAT_COLORS[key], color: CAT_COLORS[key] }
+                      : {}
+                  }
+                  onClick={() => setActiveSkillCat(key)}
+                >
+                  {label}
+                </button>
               ))}
             </div>
           </div>
-          <div className="about__contest-right">
-            <div className="about__contest-logo">🌊</div>
-            <div className="about__contest-subtitle">
-              {lang === "fr"
-                ? "Pacific Dataviz\nChallenge 2026"
-                : "Pacific Dataviz\nChallenge 2026"}
+          <div className="about-skills-grid">
+            {filteredSkills.map((s, i) => (
+              <SkillBar
+                key={i}
+                name={s.name}
+                pct={s.pct}
+                color={CAT_COLORS[s.cat]}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* ── Expériences ── */}
+        <div className="about-section">
+          <h2 className="about-section__title">{t("about.xp_title")}</h2>
+          <div className="about-timeline">
+            {EXPERIENCES.map((exp, i) => (
+              <div key={i} className="about-xp">
+                <div className="about-xp__dot" />
+                <div className="about-xp__content">
+                  <div className="about-xp__header">
+                    <div>
+                      <h3 className="about-xp__role">{exp.role}</h3>
+                      <span className="about-xp__company">{exp.company}</span>
+                    </div>
+                    <span className="about-xp__period">{exp.period}</span>
+                  </div>
+                  <p className="about-xp__desc">{exp.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Formations ── */}
+        <div className="about-section">
+          <h2 className="about-section__title">{t("about.edu_title")}</h2>
+          <div className="about-edu-grid">
+            <div className="about-edu-card">
+              <span className="about-edu-card__year">
+                {t("about.edu1_year")}
+              </span>
+              <h3 className="about-edu-card__title">{t("about.edu1_title")}</h3>
+              <span className="about-edu-card__school">
+                {t("about.edu1_school")}
+              </span>
+            </div>
+            <div className="about-edu-card">
+              <span className="about-edu-card__year">
+                {t("about.edu2_year")}
+              </span>
+              <h3 className="about-edu-card__title">{t("about.edu2_title")}</h3>
+              <span className="about-edu-card__school">
+                {t("about.edu2_school")}
+              </span>
             </div>
           </div>
         </div>
-      </section>
 
-      {/* ── CTA ──────────────────────────────────────── */}
-      <section className="about__cta-section">
-        <h2 className="about__cta-title">
-          {lang === "fr" ? "Explorer l'expérience" : "Explore the experience"}
-        </h2>
-        <div className="about__cta-buttons">
-          <button
-            className="about__cta-btn about__cta-btn--primary"
-            onClick={() => navigate("/map")}
-          >
-            🌊 {lang === "fr" ? "Montée des eaux" : "Sea Level Rise"}
-          </button>
-          <button
-            className="about__cta-btn about__cta-btn--secondary"
-            onClick={() => navigate("/cyclones")}
-          >
-            🌀 {lang === "fr" ? "Cyclones" : "Cyclones"}
-          </button>
-          <button
-            className="about__cta-btn about__cta-btn--secondary"
-            onClick={() => navigate("/surcote")}
-          >
-            🏖 {lang === "fr" ? "Surcote côtière" : "Storm Surge"}
-          </button>
-          <button
-            className="about__cta-btn about__cta-btn--secondary"
-            onClick={() => navigate("/data")}
-          >
-            📊 {lang === "fr" ? "Données" : "Data"}
-          </button>
-        </div>
-      </section>
+        {/* ── Langues + Intérêts ── */}
+        <div className="about-section about-section--row">
+          <div className="about-lang-block">
+            <h2 className="about-section__title">{t("about.lang_title")}</h2>
+            <div className="about-langs">
+              <div className="about-lang">
+                <span className="about-lang__name">{t("about.lang_fr")}</span>
+                <div className="about-skill__track">
+                  <div
+                    className="about-skill__fill"
+                    style={{ width: "100%", background: "#00e6ff" }}
+                  />
+                </div>
+                <span className="about-lang__level">
+                  {t("about.lang_fr_level")}
+                </span>
+              </div>
+              <div className="about-lang">
+                <span className="about-lang__name">{t("about.lang_en")}</span>
+                <div className="about-skill__track">
+                  <div
+                    className="about-skill__fill"
+                    style={{ width: "70%", background: "#00e6ff" }}
+                  />
+                </div>
+                <span className="about-lang__level">
+                  {t("about.lang_en_level")}
+                </span>
+              </div>
+            </div>
+          </div>
 
-      {/* ── Footer ───────────────────────────────────── */}
-      <footer className="about__footer">
-        <div className="about__footer-logo">🌊 PacificShield</div>
-        <div className="about__footer-credits">
-          Pacific Dataviz Challenge 2026 · data.gouv.nc · NOAA · GIEC AR6 · CC
-          BY 4.0
+          <div className="about-interest-block">
+            <h2 className="about-section__title">
+              {t("about.interests_title")}
+            </h2>
+            <div className="about-interests">
+              {INTERESTS.map((item, i) => (
+                <div key={i} className="about-interest">
+                  <span className="about-interest__icon">{item.icon}</span>
+                  <span className="about-interest__label">{item.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-      </footer>
+
+        {/* ── Projet ── */}
+        <div className="about-project">
+          <div className="about-project__badge">{t("about.project_badge")}</div>
+          <h2 className="about-project__title">{t("about.project_title")}</h2>
+          <p className="about-project__desc">{t("about.project_desc")}</p>
+          <div className="about-project__stack">
+            {STACK.map((tech, i) => (
+              <span key={i} className="about-project__tech">
+                {tech}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

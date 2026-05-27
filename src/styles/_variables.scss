@@ -1,0 +1,62 @@
+// src/styles/_variables.scss
+
+// ── Fonts ────────────────────────────────────────────────────
+$font-display: "Rajdhani", sans-serif;
+$font-body: "Roboto", sans-serif;
+$font-mono: "Roboto Mono", monospace;
+
+// ── Palette ──────────────────────────────────────────────────
+$ocean-900: #020b18;
+$ocean-800: #040f20;
+$ocean-700: #061528;
+$ocean-600: #0a1f3a;
+
+$cyan-bright: #00e6ff;
+$teal-glow: #00ffd5;
+
+$red-storm: #ff3b5c;
+$orange-alert: #ff6b35;
+$yellow-warn: #ffd166;
+
+$white: #f0f8ff;
+$gray-100: #e2ecf5;
+$gray-200: #b8cfe0;
+$gray-400: #5a7a94;
+$gray-600: #2d4a60;
+
+// ── Spacing ──────────────────────────────────────────────────
+$space-xs: 0.25rem;
+$space-sm: 0.5rem;
+$space-md: 1rem;
+$space-lg: 1.5rem;
+$space-xl: 2rem;
+$space-2xl: 3rem;
+$space-3xl: 4rem;
+$space-4xl: 6rem;
+$space-5xl: 8rem;
+
+// ── Layout ───────────────────────────────────────────────────
+$nav-height: 72px;
+$container-max: 1280px;
+$radius-sm: 4px;
+$radius-md: 8px;
+$radius-lg: 16px;
+$radius-xl: 24px;
+$radius-pill: 999px;
+
+// ── Breakpoints ──────────────────────────────────────────────
+$bp-sm: 640px;
+$bp-md: 768px;
+$bp-lg: 1024px;
+$bp-xl: 1280px;
+
+// ── Transitions ──────────────────────────────────────────────
+$ease-ocean: cubic-bezier(0.16, 1, 0.3, 1);
+$ease-snap: cubic-bezier(0.34, 1.56, 0.64, 1);
+$dur-fast: 150ms;
+$dur-mid: 300ms;
+$dur-slow: 600ms;
+
+// ── Z-index ──────────────────────────────────────────────────
+$z-nav: 100;
+$z-modal: 200;

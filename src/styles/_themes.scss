@@ -1,0 +1,99 @@
+// src/styles/_themes.scss
+@use "variables" as *;
+
+// ── DARK ─────────────────────────────────────────────────────
+:root,
+[data-theme="dark"] {
+  --bg-base: #{$ocean-900};
+  --bg-elevated: #{$ocean-800};
+  --bg-surface: #{$ocean-700};
+  --bg-card: rgba(10, 31, 58, 0.85);
+  --bg-nav: rgba(2, 11, 24, 0.92);
+  --bg-overlay: rgba(2, 11, 24, 0.88);
+
+  --text-primary: #{$white};
+  --text-secondary: #{$gray-200};
+  --text-muted: #{$gray-400};
+
+  --accent-primary: #{$cyan-bright};
+  --accent-glow: #{$teal-glow};
+  --accent-danger: #{$red-storm};
+  --accent-orange: #{$orange-alert};
+
+  --border-subtle: rgba(0, 230, 255, 0.08);
+  --border-mid: rgba(0, 230, 255, 0.22);
+  --border-bright: rgba(0, 230, 255, 0.5);
+  --border-card: rgba(0, 180, 204, 0.12);
+
+  --glow-cyan:
+    0 0 20px rgba(0, 230, 255, 0.35), 0 0 60px rgba(0, 230, 255, 0.1);
+  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-nav: 0 1px 0 rgba(0, 230, 255, 0.1), 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-button: 0 4px 20px rgba(0, 230, 255, 0.25);
+
+  --grad-hero:
+    radial-gradient(
+      ellipse 120% 80% at 50% 20%,
+      rgba(0, 100, 160, 0.3) 0%,
+      transparent 70%
+    ),
+    linear-gradient(180deg, #{$ocean-900} 0%, #{$ocean-800} 100%);
+  --grad-accent: linear-gradient(
+    135deg,
+    #{$cyan-bright} 0%,
+    #{$teal-glow} 100%
+  );
+  --grad-danger: linear-gradient(
+    135deg,
+    #{$red-storm} 0%,
+    #{$orange-alert} 100%
+  );
+  --grad-footer: linear-gradient(180deg, #{$ocean-800} 0%, #{$ocean-900} 100%);
+
+  --stat-bg: rgba(0, 230, 255, 0.04);
+  --stat-border: rgba(0, 230, 255, 0.15);
+}
+
+// ── LIGHT ────────────────────────────────────────────────────
+[data-theme="light"] {
+  --bg-base: #f0f8ff;
+  --bg-elevated: #e2f0fb;
+  --bg-surface: #d0e8f8;
+  --bg-card: rgba(255, 255, 255, 0.9);
+  --bg-nav: rgba(240, 248, 255, 0.95);
+  --bg-overlay: rgba(220, 238, 252, 0.92);
+
+  --text-primary: #04182a;
+  --text-secondary: #1a3a52;
+  --text-muted: #4a6a84;
+
+  --accent-primary: #006d99;
+  --accent-glow: #00a896;
+  --accent-danger: #c4003a;
+  --accent-orange: #d45a00;
+
+  --border-subtle: rgba(0, 100, 180, 0.08);
+  --border-mid: rgba(0, 100, 180, 0.18);
+  --border-bright: rgba(0, 100, 180, 0.4);
+  --border-card: rgba(0, 100, 180, 0.1);
+
+  --glow-cyan: 0 0 20px rgba(0, 100, 180, 0.15);
+  --shadow-card: 0 4px 24px rgba(0, 50, 100, 0.1);
+  --shadow-nav:
+    0 1px 0 rgba(0, 100, 180, 0.08), 0 4px 16px rgba(0, 50, 100, 0.08);
+  --shadow-button: 0 4px 16px rgba(0, 100, 180, 0.2);
+
+  --grad-hero:
+    radial-gradient(
+      ellipse 120% 80% at 50% 20%,
+      rgba(0, 150, 220, 0.12) 0%,
+      transparent 70%
+    ),
+    linear-gradient(180deg, #f0f8ff 0%, #e0f0fc 100%);
+  --grad-accent: linear-gradient(135deg, #006d99 0%, #00a896 100%);
+  --grad-danger: linear-gradient(135deg, #c4003a 0%, #d45a00 100%);
+  --grad-footer: linear-gradient(180deg, #e2f0fb 0%, #d0e8f8 100%);
+
+  --stat-bg: rgba(0, 100, 180, 0.04);
+  --stat-border: rgba(0, 100, 180, 0.12);
+}

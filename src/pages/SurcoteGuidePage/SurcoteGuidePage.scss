@@ -1,0 +1,390 @@
+// src/pages/SurcoteGuidePage/SurcoteGuidePage.scss
+@use "../../styles/variables" as *;
+
+.sur-guide {
+  padding-top: $nav-height;
+  min-height: 100vh;
+  background: var(--bg-base);
+}
+
+.sur-guide__inner {
+  max-width: $container-max;
+  margin: 0 auto;
+  padding: $space-3xl $space-xl;
+  display: flex;
+  flex-direction: column;
+  gap: $space-2xl;
+  @media (max-width: $bp-md) {
+    padding: $space-xl $space-lg;
+  }
+}
+
+.sur-guide__header {
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: $space-2xl;
+}
+
+.sur-guide__breadcrumb {
+  font-family: $font-mono;
+  font-size: 0.72rem;
+  a {
+    color: var(--accent-primary);
+    text-decoration: none;
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+}
+
+.sur-guide__label {
+  font-family: $font-mono;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+}
+
+.sur-guide__title {
+  font-family: $font-display;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+
+.sur-guide__sub {
+  font-size: 1rem;
+  color: var(--text-muted);
+  max-width: 620px;
+  line-height: 1.75;
+}
+
+.sur-guide__tabs {
+  display: flex;
+  gap: $space-xs;
+  border-bottom: 1px solid var(--border-subtle);
+  overflow-x: auto;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.sur-guide__tab {
+  padding: $space-md $space-lg;
+  border-bottom: 2px solid transparent;
+  font-family: $font-body;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  margin-bottom: -1px;
+  transition: all $dur-fast $ease-ocean;
+  &:hover {
+    color: var(--text-primary);
+  }
+  &.active {
+    color: var(--accent-primary);
+    border-color: var(--accent-primary);
+  }
+}
+
+.sur-guide__section {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2xl;
+}
+
+.sur-guide__intro {
+  font-size: 1rem;
+  color: var(--text-muted);
+  line-height: 1.75;
+  max-width: 720px;
+}
+
+// ── Scale surcote ─────────────────────────────────────────────
+.sur-guide__scale {
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.sur-guide__scale-card {
+  display: flex;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: $radius-lg;
+  overflow: hidden;
+  transition: all $dur-mid $ease-ocean;
+  &:hover {
+    border-color: var(--border-mid);
+    transform: translateX(4px);
+    box-shadow: var(--shadow-card);
+  }
+}
+
+.sur-guide__scale-bar {
+  width: 5px;
+  flex-shrink: 0;
+}
+
+.sur-guide__scale-content {
+  padding: $space-lg $space-xl;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.sur-guide__scale-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-md;
+  flex-wrap: wrap;
+}
+
+.sur-guide__scale-range {
+  font-family: $font-display;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.sur-guide__scale-label {
+  font-family: $font-mono;
+  font-size: 0.65rem;
+  padding: 3px 10px;
+  border-radius: $radius-pill;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+
+  &--0 {
+    background: rgba(0, 230, 255, 0.1);
+    color: #00e6ff;
+  }
+  &--1 {
+    background: rgba(0, 255, 213, 0.1);
+    color: #00ffd5;
+  }
+  &--2 {
+    background: rgba(255, 209, 102, 0.12);
+    color: #ffd166;
+  }
+  &--3 {
+    background: rgba(255, 107, 53, 0.12);
+    color: #ff6b35;
+  }
+  &--4 {
+    background: rgba(255, 59, 92, 0.15);
+    color: #ff3b5c;
+  }
+  &--5 {
+    background: rgba(255, 59, 92, 0.25);
+    color: #ff3b5c;
+  }
+}
+
+.sur-guide__scale-desc {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+// ── Aléas ────────────────────────────────────────────────────
+.sur-guide__aleas {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $space-xl;
+  @media (max-width: $bp-lg) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sur-guide__alea-card {
+  background: var(--bg-card);
+  border: 1px solid;
+  border-radius: $radius-xl;
+  padding: $space-xl;
+  display: flex;
+  flex-direction: column;
+  gap: $space-lg;
+  transition: all $dur-mid $ease-ocean;
+  &:hover {
+    box-shadow: var(--shadow-card);
+    transform: translateY(-3px);
+  }
+}
+
+.sur-guide__alea-header {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-md;
+}
+
+.sur-guide__alea-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.sur-guide__alea-title {
+  font-family: $font-display;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.sur-guide__alea-field {
+  font-family: $font-mono;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  display: block;
+}
+
+.sur-guide__alea-desc {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+  flex: 1;
+}
+
+.sur-guide__alea-indicator {
+  display: flex;
+  gap: $space-sm;
+  flex-wrap: wrap;
+}
+
+.sur-guide__alea-val {
+  font-family: $font-mono;
+  font-size: 0.68rem;
+  padding: 4px 12px;
+  border-radius: $radius-pill;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  color: var(--text-muted);
+}
+
+// ── Table ─────────────────────────────────────────────────────
+.sur-guide__table {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: $radius-xl;
+  overflow: hidden;
+
+  &-header {
+    display: grid;
+    grid-template-columns: 160px 160px 1fr;
+    padding: $space-md $space-xl;
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border-subtle);
+    font-family: $font-mono;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    @media (max-width: $bp-md) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &-row {
+    display: grid;
+    grid-template-columns: 160px 160px 1fr;
+    gap: $space-lg;
+    padding: $space-md $space-xl;
+    border-bottom: 1px solid var(--border-subtle);
+    align-items: start;
+    transition: background $dur-fast $ease-ocean;
+    &:last-child {
+      border-bottom: none;
+    }
+    &:hover {
+      background: var(--bg-elevated);
+    }
+    @media (max-width: $bp-md) {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+  }
+}
+
+.sur-guide__code {
+  font-family: $font-mono;
+  font-size: 0.75rem;
+  color: var(--accent-primary);
+  background: rgba(0, 230, 255, 0.07);
+  padding: 2px 8px;
+  border-radius: $radius-sm;
+  width: fit-content;
+}
+
+.sur-guide__field-label {
+  font-family: $font-display;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  align-self: center;
+}
+
+.sur-guide__field-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+// ── FAQ ───────────────────────────────────────────────────────
+.sur-guide__faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.sur-guide-faq {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: $radius-lg;
+  overflow: hidden;
+  transition: border-color $dur-fast $ease-ocean;
+  &.open {
+    border-color: var(--border-mid);
+  }
+
+  &__q {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: $space-lg $space-xl;
+    font-family: $font-display;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+    gap: $space-md;
+    text-align: left;
+    transition: color $dur-fast $ease-ocean;
+    &:hover {
+      color: var(--accent-primary);
+    }
+  }
+
+  &__icon {
+    font-family: $font-mono;
+    font-size: 1.2rem;
+    color: var(--accent-primary);
+    flex-shrink: 0;
+  }
+
+  &__a {
+    padding: 0 $space-xl $space-lg;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.75;
+    border-top: 1px solid var(--border-subtle);
+    padding-top: $space-md;
+  }
+}
